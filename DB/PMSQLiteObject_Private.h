@@ -1,6 +1,6 @@
 //
 //  PMSQLiteObject_Private.h
-//  Created by Joan Martin on 2/15/13.
+//  Created by Joan Martin.
 //  Take a look to my repos at http://github.com/vilanovi
 //
 

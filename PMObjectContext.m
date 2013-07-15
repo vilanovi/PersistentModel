@@ -1,6 +1,6 @@
 //
 //  PMObjectContext.m
-//  Created by Joan Martin on 1/23/13.
+//  Created by Joan Martin.
 //  Take a look to my repos at http://github.com/vilanovi
 //
 

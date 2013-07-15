@@ -1,6 +1,6 @@
 //
 //  PMBaseObject.h
-//  Created by Joan Martin on 10/17/12.
+//  Created by Joan Martin.
 //  Take a look to my repos at http://github.com/vilanovi
 //
 
