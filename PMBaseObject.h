@@ -12,8 +12,20 @@ extern NSString * const PMPersistentModelNilKeyException;
 @class PMObjectContext;
 
 /*!
- * Superclass of persistent objects. 
- * This class contains all the logic in order to manipulate properties via KVC.
+ * Superclass of persistent objects. Persistent objects will have to be a subclass of this one.
+ *
+ * In order to persist properties, you can choose between:
+ *       1. Manually encode and decode your properties using the NSCoding protocol methods
+ *       2. Override the method "+keysForPersistentValues" and return a set of strings with the names of those properties you want to persist.
+ *
+ * Also, this class is subclass of "PMKeyMappingObject". That means you can add additional key-value mappings to get and set properties with multiple names.
+ * In order to implement this functionality override the static method "+dictionaryWithKeysForMappingKeys" and return the additional mappings between the property names and custom names.
+ * In the dictionary, the key is the additional key-value accessor name and the value is the property name:
+ *
+ *   + (NSDictionary*)dictionaryWithKeysForMappingKeys
+ *   {
+ *       return @{@"my_custom_key_name" : @"key"};
+ *   }
  */
 @interface PMBaseObject : PMKeyMappingObject <NSCoding, NSCopying>
 
@@ -96,8 +108,21 @@ extern NSString * const PMPersistentModelNilKeyException;
  */
 - (BOOL)registerToContext:(PMObjectContext*)context;
 
+/*!
+ * Set of property names that are automatically persistent via KVC access.
+ * @discussion Subclasses may override this method to mark those properties to be persistent. Values will be accessed via KVC. By default this class returns an empty set.
+ */
 + (NSSet*)keysForPersistentValues;
 
+/*!
+ * Dictionary with additional mappings for the current properties. In the dictionary, the key is the additional key-value accessor name and the value is the property name.
+ * @discussion Subclasses may override this method to set additional mappings for class properties. By default this method returns an empty dictionary.
+ *
+ *   + (NSDictionary*)dictionaryWithKeysForMappingKeys
+ *   {
+ *       return @{@"my_custom_key_name" : @"key"};
+ *   }
+ */
 + (NSDictionary*)dictionaryWithKeysForMappingKeys;
 
 @end
