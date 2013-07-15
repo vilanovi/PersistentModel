@@ -11,6 +11,11 @@
 - (id)initWithMapping:(NSDictionary*)mapping;
 
 @property (nonatomic, strong, readonly) NSArray *mappings;
+
+/*!
+ * Debug flag to print undefined mappings. 
+ * @discussion In a release scheme, undfined mappings are not logged even this property is set to YES.
+ */
 @property (nonatomic, assign) BOOL logUndefinedMappings;
 
 - (void)addKeyMapping:(NSDictionary*)dictionary;

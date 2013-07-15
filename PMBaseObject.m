@@ -7,6 +7,8 @@
 #import "PMBaseObject.h"
 #import "PMObjectContext.h"
 
+NSString * const PMPersistentModelNilKeyException = @"PMPersistentModelNilKeyException";
+
 NSString * const PMBaseObjectDidUpdateNotification = @"PMBaseObjectDidUpdateNotification";
 
 @implementation PMBaseObject
@@ -106,16 +108,13 @@ NSString * const PMBaseObjectDidUpdateNotification = @"PMBaseObjectDidUpdateNoti
     return copy;
 }
 
-//- (void)dealloc
-//{
-//
-//}
-
 + (PMBaseObject*)baseObjectWithKey:(NSString *)key inContext:(PMObjectContext*)context allowsCreation:(BOOL)flag
 {
     if (key == nil)
     {
-        PLog([NSString stringWithFormat:@"BaseObject type: %@",NSStringFromClass(self)], @"BaseObjectCreationsWithNilKey.txt");
+        NSString *reason = [NSString stringWithFormat:@"Trying to fetch an object of type %@ with a nil key.", NSStringFromClass(self)];
+        NSException *exception = [NSException exceptionWithName:PMPersistentModelNilKeyException reason:reason userInfo:nil];
+        [exception raise];
         return nil;
     }
     
@@ -170,19 +169,6 @@ NSString * const PMBaseObjectDidUpdateNotification = @"PMBaseObjectDidUpdateNoti
 
 #pragma mark Properties
 
-- (BOOL)hasTrustedData
-{
-    NSTimeInterval now = [[NSDate date] timeIntervalSince1970];
-    NSTimeInterval lastUpdate = [_lastUpdate timeIntervalSince1970];
-    NSTimeInterval diff = now - lastUpdate;
-    
-    NSTimeInterval trustedOffset = [self trustedTimeIntervalFromLastUpdate];
-    
-    BOOL hasTrustedData = diff < trustedOffset;
-    
-    return hasTrustedData;
-}
-
 - (void)setLastUpdate:(NSDate *)lastUpdate
 {
     _lastUpdate = lastUpdate;
@@ -221,12 +207,6 @@ NSString * const PMBaseObjectDidUpdateNotification = @"PMBaseObjectDidUpdateNoti
     return @{};
 }
 
-#pragma mark Object Life Trusting
-
-- (NSTimeInterval)trustedTimeIntervalFromLastUpdate
-{
-    return 3600.0;
-}
 
 @end
 

@@ -118,8 +118,9 @@
 {
     if (_logUndefinedMappings)
     {
-        MMLog(@"WARNING: Unrecognized Key <%@> for class %@", key, [self.class description]);
-        [self _registerUnrecognizedSetterWithKey:key ofType:NSStringFromClass([value class])];
+#if DEBUG
+        NSLog(@"%s :: Unrecognized Key <%@> for class %@", __PRETTY_FUNCTION__, key, [self.class description]);
+#endif
     }
 }
 
@@ -127,35 +128,12 @@
 {    
     if (_logUndefinedMappings)
     {
-        MMLog(@"WARNING: Unrecognized Key <%@> for class %@",key, [self.class description]);
-        [self _registerUnrecognizedGetterWithKey:key];
+#if DEBUG
+        NSLog(@"%s :: Unrecognized Key <%@> for class %@", __PRETTY_FUNCTION__, key, [self.class description]);
+#endif
     }
     
     return nil;
-}
-
-#pragma mark Private Methods
-
-static NSString * const UndefinedKeyRegisterFileName = @"UndefinedKeys.txt";
-
-- (void)_registerUnrecognizedGetterWithKey:(NSString*)key
-{    
-    NSString *methodType = @"GET";
-    NSString *entity = NSStringFromClass(self.class);
-    
-    NSString *text = [NSString stringWithFormat:@"MethodType:<%@> Entity:<%@> UndefinedKey:<%@>", methodType, entity, key];
-    
-    PLog(text, UndefinedKeyRegisterFileName);
-}
-
-- (void)_registerUnrecognizedSetterWithKey:(NSString*)key ofType:(NSString*)type
-{    
-    NSString *methodType = @"SET";
-    NSString *entity = NSStringFromClass(self.class);
-    
-    NSString *text = [NSString stringWithFormat:@"MethodType:<%@> Entity:<%@> UndefinedKey:<%@> Type:<%@>", methodType, entity, key, type];
-    
-    PLog(text, UndefinedKeyRegisterFileName);
 }
 
 @end
