@@ -12,7 +12,7 @@
 
 @implementation PMKeyMappingObject
 {
-    NSMutableArray *_mappings;
+    NSMutableDictionary *_mappings;
 }
 
 - (id)init
@@ -25,86 +25,104 @@
     self = [super init];
     if (self)
     {
-        _mappings = [NSMutableArray array];
+        _mappings = [NSMutableDictionary dictionary];
         _logUndefinedMappings = YES;
         
         if (mapping)
-            [_mappings addObject:mapping];
+            [_mappings addEntriesFromDictionary:mapping];
     }
     return self;
 }
 
 - (NSString*)description
 {
-    return [NSString stringWithFormat:@"%@ - MappedValues: %@", [super description], [[self dictionaryWithValuesForKeys:[[_mappings lastObject] allValues]] description]];
+    NSArray *keys = [_mappings allValues];
+    NSDictionary *keyValues = [self dictionaryWithValuesForKeys:keys];
+    
+    return [NSString stringWithFormat:@"%@ - MappedValues: %@", [super description], [keyValues description]];
 }
 
 #pragma mark Properties
 
-- (NSArray*)mappings
+- (NSDictionary*)mappings
 {
     return [_mappings copy];
+}
+
+- (void)setMappings:(NSDictionary *)mappings
+{
+    _mappings = [mappings mutableCopy];
 }
 
 #pragma mark Public Methods
 
 - (void)addKeyMapping:(NSDictionary*)dictionary
 {
-    [_mappings addObject:dictionary];
+    [_mappings addEntriesFromDictionary:dictionary];
 }
 
 - (void)removeKeyMapping:(NSDictionary*)dictionary
 {
-    [_mappings removeObject:dictionary];
-}
-
-- (NSDictionary*)dictionaryWithValuesForKeys:(NSArray*)keys
-{
-    NSMutableDictionary *dic = [NSMutableDictionary dictionary];
-    
-    for (NSString *key in keys)
+    for (NSString *key in dictionary)
     {
-        id value = [self valueForKey:key];
+        NSString *value1 = [dictionary valueForKey:key];
+        NSString *value2 = [_mappings valueForKey:key];
         
-        if (value)
-            [dic setObject:value forKey:key];
+        if ([value1 isEqualToString:value2])
+            [_mappings removeObjectForKey:key];
     }
-    
-    return [dic copy];
 }
 
-- (id)validateValue:(id)value forMappedKey:(NSString*)key
+- (void)removeKeyMappingForKeys:(NSArray*)keys
 {
-    return value;
+    [_mappings removeObjectsForKeys:keys];
+}
+
+- (BOOL)validateValue:(inout __autoreleasing id *)ioValue forMappedKey:(NSString*)key firingKey:(NSString*)firingKey error:(out NSError *__autoreleasing *)outError
+{
+    return [self validateValue:ioValue forKey:key error:outError];
 }
 
 - (NSString*)mapKey:(NSString*)key
 {
-    for (NSDictionary *mapping in _mappings)
-    {
-        NSString *mappedKey = [mapping valueForKey:key];
-        
-        if (mappedKey)
-            return mappedKey;
-    }
+    NSString *mappedKey = [_mappings valueForKey:key];
+    
+    if (mappedKey)
+        return mappedKey;
     
     return key;
 }
 
 - (void)setValue:(id)value forMappedKey:(NSString *)key
 {
-    value = [self validateValue:value forMappedKey:key];
-    
-    if (value)
-        [super setValue:value forKey:key];
+    [super setValue:value forKey:key];
 }
 
 #pragma mark Key Value Coding
 
+- (void)setNilValueForKey:(NSString *)key
+{
+    // Subclasses may override
+}
+
 - (void)setValue:(id)value forKey:(NSString *)key
 {
     NSString *mappedKey = [self mapKey:key];
-    [self setValue:value forMappedKey:mappedKey];
+    
+    NSError *error = nil;
+    BOOL succeed = [self validateValue:&value forMappedKey:mappedKey firingKey:key error:&error];
+    
+    if (succeed)
+    {
+        [self setValue:value forMappedKey:mappedKey];
+    }
+    else
+    {
+#if DEBUG
+        if (error)
+            NSLog(@"WARNING: Cannot set value for key <%@> in class <%@>. Error: %@", key, NSStringFromClass(self.class), error.description);
+#endif
+    }
 }
 
 - (id)valueForKey:(NSString *)key
