@@ -1,8 +1,8 @@
 
-#import "PMValues.h"
+#import "PMKeyMappingObject.h"
 #import "PMBaseObject.h"
 #import "PMObjectContext.h"
 
 #import "PMPersistentStore.h"
 #import "PMSQLiteStore.h"
-#import "PMCoreDataSotre.h"
+#import "PMCoreDataStore.h"
