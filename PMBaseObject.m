@@ -5,11 +5,10 @@
 //
 
 #import "PMBaseObject.h"
+
 #import "PMObjectContext.h"
 
-NSString * const PMPersistentModelNilKeyException = @"PMPersistentModelNilKeyException";
-
-NSString * const PMBaseObjectDidUpdateNotification = @"PMBaseObjectDidUpdateNotification";
+NSString * const PMBaseObjectNilKeyException = @"PMBaseObjectNilKeyException";
 
 @implementation PMBaseObject
 
@@ -113,7 +112,7 @@ NSString * const PMBaseObjectDidUpdateNotification = @"PMBaseObjectDidUpdateNoti
     if (key == nil)
     {
         NSString *reason = [NSString stringWithFormat:@"Trying to fetch an object of type %@ with a nil key.", NSStringFromClass(self)];
-        NSException *exception = [NSException exceptionWithName:PMPersistentModelNilKeyException reason:reason userInfo:nil];
+        NSException *exception = [NSException exceptionWithName:PMBaseObjectNilKeyException reason:reason userInfo:nil];
         [exception raise];
         return nil;
     }

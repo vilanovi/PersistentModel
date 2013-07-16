@@ -4,10 +4,9 @@
 //  Take a look to my repos at http://github.com/vilanovi
 //
 
-#import <Foundation/Foundation.h>
 #import "PMKeyMappingObject.h"
 
-extern NSString * const PMPersistentModelNilKeyException;
+extern NSString * const PMBaseObjectNilKeyException;
 
 @class PMObjectContext;
 

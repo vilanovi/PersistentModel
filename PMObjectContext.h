@@ -9,8 +9,20 @@
 @class PMBaseObject;
 @class PMPersistentStore;
 
+/*!
+ * After a successful save, this notification is posted.
+ * UserInfo will contain the keys 'PMObjectContextSavedObjectsKey' and 'PMObjectContextDeletedObjectsKey' to retrieve the saved and deleted objects respectively.
+ */
 extern NSString * const PMObjectContextDidSaveNotification;
+
+/*!
+ * Key to be used in the UserInfo dictionary of the 'PMObjectContextDidSaveNotification' notification to retrieve the saved objects.
+ */
 extern NSString * const PMObjectContextSavedObjectsKey;
+
+/*!
+ * Key to be used in the UserInfo dictionary of the 'PMObjectContextDidSaveNotification' notification to retrieve the deleted objects.
+ */
 extern NSString * const PMObjectContextDeletedObjectsKey;
 
 /*!
@@ -19,17 +31,19 @@ extern NSString * const PMObjectContextDeletedObjectsKey;
 @interface PMObjectContext : NSObject
 
 /*!
- * TODO
+ * Default initializer. 
+ * @param persistentStore The persistent store to use. If nil any peristent store will be used and model won't be able to persist.
  */
 - (id)initWithPersistentStore:(PMPersistentStore*)persistentStore;
 
 /*!
- * TODO
+ * The current used persistent store.
  */
 @property (nonatomic, strong, readonly) PMPersistentStore *persistentStore;
 
 /*!
- * TODO
+ * Boolean indicating if there are changes to save or not. YES if any new object has been inserted, deleted or modifyed, otherwise NO
+ * @discussion This property works withing the 'hasChanges' property of 'PMBaseObject'. Remember that in 'PMBaseObject' changes are tracked via KVC methods. If you modify an object directly is your responsibility to set the flag 'hasChanges' to YES.
  */
 @property (nonatomic, assign, readonly) BOOL hasChanges;
 
@@ -55,32 +69,41 @@ extern NSString * const PMObjectContextDeletedObjectsKey;
 - (NSArray*)registeredObjects;
 
 /*!
- * TODO
+ * Use this method to insert unregistered 'PMBaseObject's into the current context.
+ * @param object The object to insert. This argument cannot be nil, otherwise a 'NSInvalidArgumentException' exception will be rised.
+ * @return YES if the object has beeen inserted, NO otherwise.
+ * @discussion If there is another object in the context with the same key, the given object won't be inserted into the context and the method will return NO. To persist changes a 'save' is required
  */
-- (void)insertObject:(PMBaseObject*)object;
+- (BOOL)insertObject:(PMBaseObject*)object;
 
 /*!
- * TODO
+ * Use this method to delete a registered object from the context.
+ * @param object The object to delete.
+ * @discussion This method will unregister the object from the context by setting the object.context to nil and stop tracking changes of it. To persist changes a 'save' is required.
  */
 - (void)deleteObject:(PMBaseObject*)object;
 
 /*!
- * TODO
+ * Saves the current context into the persistent store. This method is equivalent to '-saveWithCompletionBlock:' with a NULL block as argument.
  */
 - (void)save;
 
 /*!
- * TODO
+ * Saves the current context into the persistent store. 
+ * @param completionBlock This block is called once the save is finished and contains a parameter 'succeed' to check if the saving has been successful.
+ * @discussion This method operates in a background thread (even calling the completion block).
  */
 - (void)saveWithCompletionBlock:(void (^)(BOOL succeed))completionBlock;
 
 /*!
- * TODO
+ * When having multiple contexts operating on the same persistent store, call this method from the 'PMObjectContextDidSaveNotification' posted by other contexts to update the current state of the current context.
  */
 - (void)mergeChangesFromContextDidSaveNotification:(NSNotification*)notification;
 
 /*!
- * TODO
+ * Queries to the persistent store and returns all objects stored of the given class.
+ * @param objectClass The class to retrieve all stored objects.
+ * @return An array with all instances of the specified class.
  */
 - (NSArray*)objectsOfClass:(Class)objectClass;
 

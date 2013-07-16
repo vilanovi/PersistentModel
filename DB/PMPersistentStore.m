@@ -6,6 +6,8 @@
 
 #import "PMPersistentStore.h"
 
+#import "PMPersistentObject.h"
+
 @implementation PMPersistentStore
 
 - (id)initWithURL:(NSURL*)url

@@ -83,17 +83,34 @@ NSString * const PMObjectContextDeletedObjectsKey = @"PMObjectContextDeletedObje
     return _objects.allValues;
 }
 
-- (void)insertObject:(PMBaseObject*)object
+- (BOOL)insertObject:(PMBaseObject*)object
 {
-    if (object != nil)
+    if (object == nil)
     {
-        _hasChanges = YES;
-        [_objects setValue:object forKey:object.key];
+        NSString *reason = @"You cannot insert a nil object into a context.";
+        NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException reason:reason userInfo:nil];
+        [exception raise];
+        return NO;
     }
+    
+    if ([self containsObjectWithKey:object.key])
+        return NO;
+    
+    _hasChanges = YES;
+    [_objects setValue:object forKey:object.key];
+    return YES;
 }
 
 - (void)deleteObject:(PMBaseObject*)object
 {
+    if (object == nil)
+    {
+        NSString *reason = @"You cannot delete a nil object from a context.";
+        NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException reason:reason userInfo:nil];
+        [exception raise];
+        return;
+    }
+    
     if ([_objects.allValues containsObject:object])
     {
         _hasChanges = YES;
@@ -260,7 +277,7 @@ NSString * const PMObjectContextDeletedObjectsKey = @"PMObjectContextDeletedObje
 }
 
 - (PMBaseObject*)_baseObjectFromModelObject:(id<PMPersistentObject>)modelObject
-{
+{    
     NSAssert(modelObject != nil, @"ModelObject should not be nil");
     NSAssert(modelObject.key != nil, @"Model Object of type %@ has a key == ", modelObject.type, modelObject.key);
     

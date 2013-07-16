@@ -5,7 +5,8 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "PMPersistentObject.h"
+
+@protocol PMPersistentObject;
 
 typedef enum __PMOptionDelete
 {
