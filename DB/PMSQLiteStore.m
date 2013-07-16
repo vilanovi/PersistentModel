@@ -55,29 +55,18 @@ NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateException";
     return self;
 }
 
-#pragma mark Public Methods
-
-- (void)closeStore
-{
-    [_dbQueue close];
-}
-
-- (PMSQLiteObject*)createPersistentObjectWithKey:(NSString*)key ofType:(NSString*)type
-{
-    NSAssert(key != nil, @"Trying to save base object of type %@ with a nil key", type);
-    NSAssert(type != nil, @"Trying to save base object with key %@ with a nil type", key);
-    
-    PMSQLiteObject *object = [[PMSQLiteObject alloc] initWithKey:key andType:type];
-    object.persistentStore = self;
-    
-    [_dictionary setValue:object forKey:key];
-    [_insertedObjects addObject:object];
-    
-    return object;
-}
+#pragma mark Super Methods
 
 - (PMSQLiteObject*)persistentObjectWithKey:(NSString*)key
 {
+    if (key == nil)
+    {
+        NSString *reason = @"Cannot query for a persistent object with a nil key.";
+        NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException reason:reason userInfo:nil];
+        [exception raise];
+        return nil;
+    }
+    
     __block PMSQLiteObject *persistentObject = [_dictionary valueForKey:key];
     
     if (!persistentObject)
@@ -98,10 +87,12 @@ NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateException";
             }
         }];
         
-        [_dictionary setValue:persistentObject forKey:key];
+        if (persistentObject)
+            [_dictionary setValue:persistentObject forKey:key];
     }
     
-    [self _didAccessObjectWithID:persistentObject.dbID];
+    if (persistentObject)
+        [self _didAccessObjectWithID:persistentObject.dbID];
     
     return persistentObject;
 }
@@ -139,8 +130,53 @@ NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateException";
     return array;
 }
 
+
+- (PMSQLiteObject*)createPersistentObjectWithKey:(NSString*)key ofType:(NSString*)type
+{
+    if (key == nil)
+    {
+        NSString *reason = @"Cannot create a persistent object with a nil key.";
+        NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException reason:reason userInfo:nil];
+        [exception raise];
+        return nil;
+    }
+    else if (type == nil)
+    {
+        NSString *reason = @"Cannot create a persistent object with a nil type.";
+        NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException reason:reason userInfo:nil];
+        [exception raise];
+        return nil;
+    }
+    
+    PMSQLiteObject *existingObject = [self persistentObjectWithKey:key];
+    
+    if (existingObject)
+    {
+        NSString *reason = @"Cannot create a persitent object because it exists already an object with the given key.";
+        NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException reason:reason userInfo:@{PMPersistentStoreObjectKey: existingObject}];
+        [exception raise];
+        return nil;
+    }
+    
+    PMSQLiteObject *object = [[PMSQLiteObject alloc] initWithKey:key andType:type];
+    object.persistentStore = self;
+    
+    [_dictionary setValue:object forKey:key];
+    [_insertedObjects addObject:object];
+    
+    return object;
+}
+
 - (void)deletePersistentObjectWithKey:(NSString*)key
 {
+    if (key == nil)
+    {
+        NSString *reason = @"Cannot delete a persistent object with a nil key.";
+        NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException reason:reason userInfo:nil];
+        [exception raise];
+        return;
+    }
+    
     PMSQLiteObject *object = [self persistentObjectWithKey:key];
     
     [_dictionary removeObjectForKey:key];
@@ -262,6 +298,13 @@ NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateException";
     }
     
     return YES;
+}
+
+#pragma mark Public Methods
+
+- (void)closeStore
+{
+    [_dbQueue close];
 }
 
 - (void)cleanCache

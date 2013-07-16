@@ -36,6 +36,27 @@
     return self;
 }
 
+- (NSString*)description
+{
+    return [NSString stringWithFormat:@"%@: <id:%d> <key:%@> <type:%@> <lastUpdate:%@> <dataLength:%d>",[super description], _dbID, _key, _type, _lastUpdate.description, _data.length];
+}
+
+- (BOOL)isEqual:(id)object
+{
+    if (![object isKindOfClass:[self class]])
+        return NO;
+    
+    return [[(PMSQLiteObject*)object key] isEqualToString:_key];
+}
+
+- (NSUInteger)hash
+{
+    NSString *string = [NSString stringWithFormat:@"%d-%@",_dbID, _key];
+    return string.hash;
+}
+
+#pragma mark Private Methods
+
 - (void)setDbID:(NSInteger)dbID
 {
     _dbID = dbID;
@@ -67,23 +88,12 @@
     self.hasChanges = _hasChanges || didChange;
 }
 
+#pragma mark Key Value Coding
+
 - (void)setValue:(id)value forKey:(NSString *)key
 {
     _hasChanges = ![value isEqual:[self valueForKey:key]] || _hasChanges;
     [super setValue:value forKey:key];
-}
-
-- (NSString*)description
-{
-    return [NSString stringWithFormat:@"%@: <id:%d> <key:%@> <type:%@> <lastUpdate:%@> <dataLength:%d>",[super description], _dbID, _key, _type, _lastUpdate.description, _data.length];
-}
-
-- (BOOL)isEqual:(id)object
-{
-    if (![object isKindOfClass:[self class]])
-        return NO;
-    
-    return [[(PMSQLiteObject*)object key] isEqualToString:_key];
 }
 
 @end

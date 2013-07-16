@@ -57,8 +57,20 @@
 
 - (PMCoreDataObject*)createPersistentObjectWithKey:(NSString*)key ofType:(NSString*)type
 {
-    NSAssert(key != nil, @"Trying to save base object of type %@ with a nil key", type);
-    NSAssert(type != nil, @"Trying to save base object with key %@ with a nil type", key);
+    if (key == nil)
+    {
+        NSString *reason = @"Cannot create a persistent object with a nil key.";
+        NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException reason:reason userInfo:nil];
+        [exception raise];
+        return nil;
+    }
+    else if (type == nil)
+    {
+        NSString *reason = @"Cannot create a persistent object with a nil type.";
+        NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException reason:reason userInfo:nil];
+        [exception raise];
+        return nil;
+    }
     
     PMCoreDataObject *modelObject = [[PMCoreDataObject alloc] initWithEntity:[NSEntityDescription entityForName:@"ModelObject" inManagedObjectContext:self.currentManagedObjectContext]
                                         insertIntoManagedObjectContext:self.currentManagedObjectContext];

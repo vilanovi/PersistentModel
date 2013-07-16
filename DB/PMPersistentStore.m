@@ -8,14 +8,20 @@
 
 #import "PMPersistentObject.h"
 
+NSString * const PMPersistentStoreObjectKey = @"PMPersistentStoreObjectKey";
+
 @implementation PMPersistentStore
 
 - (id)initWithURL:(NSURL*)url
 {
-    // Abstract class
     if (self.class == [PMPersistentStore class])
+    {
+        NSString *reason = @"PMPersistentStore cannot be instanciated thus it's an abstract class. Try by instanciating PMSQliteStore or PMCoreDataStore.";
+        NSException *exception = [NSException exceptionWithName:NSInternalInconsistencyException reason:reason userInfo:nil];
+        [exception raise];
         return nil;
-    
+    }
+
     self = [super init];
     if (self)
     {
