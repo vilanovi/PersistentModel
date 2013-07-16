@@ -44,6 +44,14 @@
 
 - (PMCoreDataObject*)persistentObjectWithKey:(NSString*)key
 {
+    if (key == nil)
+    {
+        NSString *reason = @"Cannot query for a persistent object with a nil key.";
+        NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException reason:reason userInfo:nil];
+        [exception raise];
+        return nil;
+    }
+    
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"ModelObject"];
     fetchRequest.predicate = [NSPredicate predicateWithFormat:@"self.key == %@", key];
 
@@ -72,6 +80,16 @@
         return nil;
     }
     
+    PMCoreDataObject *existingObject = [self persistentObjectWithKey:key];
+    
+    if (existingObject)
+    {
+        NSString *reason = @"Cannot create a persitent object because it exists already an object with the given key.";
+        NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException reason:reason userInfo:@{PMPersistentStoreObjectKey: existingObject}];
+        [exception raise];
+        return nil;
+    }
+    
     PMCoreDataObject *modelObject = [[PMCoreDataObject alloc] initWithEntity:[NSEntityDescription entityForName:@"ModelObject" inManagedObjectContext:self.currentManagedObjectContext]
                                         insertIntoManagedObjectContext:self.currentManagedObjectContext];
     modelObject.key = key;
@@ -81,7 +99,15 @@
 }
 
 - (NSArray*)persistentObjectsOfType:(NSString*)type
-{    
+{
+    if (type == nil)
+    {
+        NSString *reason = @"Cannot query for persistent objects with a nil type.";
+        NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException reason:reason userInfo:nil];
+        [exception raise];
+        return nil;
+    }
+    
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"ModelObject"];
     fetchRequest.predicate = [NSPredicate predicateWithFormat:@"self.type == %@", type];
     
@@ -93,12 +119,21 @@
 
 - (void)deletePersistentObjectWithKey:(NSString*)key
 {
+    if (key == nil)
+    {
+        NSString *reason = @"Cannot delete a persistent object with a nil key.";
+        NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException reason:reason userInfo:nil];
+        [exception raise];
+        return;
+    }
+    
     PMCoreDataObject *object = (PMCoreDataObject*)[self persistentObjectWithKey:key];
+    
     if (object)
         [self.currentManagedObjectContext deleteObject:object];
 }
 
-- (void)deleteEntriesOfType:(NSString*)type olderThan:(NSDate*)date policy:(PMOptionDelete)option
+- (BOOL)deleteEntriesOfType:(NSString*)type olderThan:(NSDate*)date policy:(PMOptionDelete)option
 {
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"ModelObject"];
     if (type)
@@ -110,12 +145,14 @@
     NSArray *result = [self.currentManagedObjectContext executeFetchRequest:fetchRequest error:&error];
     
     if (error)
-        return;
+        return NO;
     
     for (PMCoreDataObject *object in result)
         [[self currentManagedObjectContext] deleteObject:object];
 
     [self save];
+    
+    return YES;
 }
 
 #pragma mark - Core Data
@@ -131,14 +168,13 @@
 
 - (BOOL)save
 {
-//    NSLog(@"SAVING!");
     NSError *error = nil;
     NSManagedObjectContext *managedObjectContext = self.currentManagedObjectContext;
     if (managedObjectContext != nil)
     {
         if ([managedObjectContext hasChanges] && ![managedObjectContext save:&error])
         {
-            MMLog(@"Unresolved error %@, %@", error, [error userInfo]);
+            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
         }
     }
     
@@ -172,7 +208,7 @@
 //    string = [string substringToIndex:string.length-1];
 //    NSInteger tid = [string integerValue];
     
-//    MMLog(@"CONTEXT IN THREAD: %d",tid);
+//    NSLog(@"CONTEXT IN THREAD: %d",tid);
     
     NSManagedObjectContext *context = [_contexts objectForKey:@(tid)];
     
@@ -225,7 +261,7 @@
     
     if (![_persistentStoreCoordinator addPersistentStoreWithType:storeType configuration:nil URL:storeURL options:nil error:&error])
     {
-        MMLog(@"Unresolved error %@, %@", error, [error userInfo]);
+        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
         abort();
     }
     

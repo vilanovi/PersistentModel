@@ -1,5 +1,5 @@
 //
-//  MMKeyMappingObject.m
+//  PMKeyMappingObject.m
 //  Created by Joan Martin.
 //  Take a look to my repos at http://github.com/vilanovi
 //

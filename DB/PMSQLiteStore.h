@@ -8,11 +8,22 @@
 
 @class PMSQLiteObject;
 
-extern NSString * const PMSQLiteStoreUpdateException;
-
+/*!
+ * SQLite implementation for the PMPersistentStore.
+ *
+ * This class uses the FMDB SQLite database management.
+ * You can download the latest version in https://github.com/ccgus/fmdb
+ */
 @interface PMSQLiteStore : PMPersistentStore
 
+/*!
+ * Call this method to close the store.
+ */
 - (void)closeStore;
+
+/*!
+ * Call this method to clean the current cached persisted objects.
+ */
 - (void)cleanCache;
 
 @end

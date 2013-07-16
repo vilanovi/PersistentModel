@@ -53,9 +53,10 @@ NSString * const PMPersistentStoreObjectKey = @"PMPersistentStoreObjectKey";
     // Subclasses must override.
 }
 
-- (void)deleteEntriesOfType:(NSString*)type olderThan:(NSDate*)date policy:(PMOptionDelete)option
+- (BOOL)deleteEntriesOfType:(NSString*)type olderThan:(NSDate*)date policy:(PMOptionDelete)option
 {
     // Subclasses must override.
+    return NO;
 }
 
 - (BOOL)save

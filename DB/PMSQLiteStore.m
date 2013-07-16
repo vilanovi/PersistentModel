@@ -14,7 +14,7 @@
 
 #import "PMSQLiteObject_Private.h"
 
-NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateException";
+static NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateException";
 
 #define UpdateException [NSException exceptionWithName:PMSQLiteStoreUpdateException reason:nil userInfo:nil]
 
@@ -99,6 +99,14 @@ NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateException";
 
 - (NSArray*)persistentObjectsOfType:(NSString*)type
 {
+    if (type == nil)
+    {
+        NSString *reason = @"Cannot query for persistent objects with a nil type.";
+        NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException reason:reason userInfo:nil];
+        [exception raise];
+        return nil;
+    }
+    
     __block  NSMutableArray *array = nil;
     
     NSMutableArray *dbIDs = [NSMutableArray array];
@@ -202,7 +210,7 @@ NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateException";
     }
 }
 
-- (void)deleteEntriesOfType:(NSString*)type olderThan:(NSDate*)date policy:(PMOptionDelete)option // <-- THIS METHOD SHOULD BE IN CONTEXT, NOT IN DB
+- (BOOL)deleteEntriesOfType:(NSString*)type olderThan:(NSDate*)date policy:(PMOptionDelete)option // <-- THIS METHOD SHOULD BE IN CONTEXT, NOT IN DB
 {
     NSString *optionDate = nil;
     switch (option)
@@ -244,6 +252,8 @@ NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateException";
         query2 = @"DELETE FROM Objects";
     }
     
+    __block BOOL succeed = YES;
+    
     [_dbQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
         @try
         {
@@ -255,16 +265,22 @@ NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateException";
         }
         @catch (NSException *exception)
         {
+            succeed = NO;
+            
             if ([exception.name isEqualToString:PMSQLiteStoreUpdateException])
                 *rollback = YES;
             else
                 @throw exception;
         }
     }];
+    
+    return succeed;
 }
 
 - (BOOL)save
 {
+    BOOL success = YES;
+    
     @synchronized(self)
     {
         NSMutableSet *insertedObjects = [_insertedObjects copy];
@@ -280,24 +296,28 @@ NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateException";
         // -- Inserted Objects -- //
         for (PMSQLiteObject *object in insertedObjects)
         {
-            [self _insertPersistentObject:object];
+            BOOL flag = [self _insertPersistentObject:object];
+            success = success || flag;
         }
         
         // -- Deleted Objects -- //
         for (PMSQLiteObject *object in deletedObjects)
         {
-            [self _deletePersistentObject:object];
+            BOOL flag = [self _deletePersistentObject:object];
+            success = success || flag;
         }
         
         // -- Updated Objects -- //
         for (PMSQLiteObject *object in updatedObjects)
         {
-            [self _updatePersistentObject:object];
-            [object setHasChanges:NO];
+            BOOL flag = [self _updatePersistentObject:object];
+            if (flag)
+                [object setHasChanges:NO];
+            success = success || flag;
         }
     }
     
-    return YES;
+    return success;
 }
 
 #pragma mark Public Methods
@@ -320,8 +340,10 @@ NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateException";
         [_updatedObjects addObject:object];
 }
 
-- (void)_createTables
+- (BOOL)_createTables
 {
+    __block BOOL succeed = YES;
+    
     [_dbQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
         @try
         {
@@ -332,16 +354,22 @@ NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateException";
         }
         @catch (NSException *exception)
         {
+            succeed = NO;
+            
             if ([exception.name isEqualToString:PMSQLiteStoreUpdateException])
                 *rollback = YES;
             else
                 @throw exception;
         }
     }];
+    
+    return succeed;
 }
 
-- (void)_insertEmptyPersistentObject:(PMSQLiteObject*)object
+- (BOOL)_insertEmptyPersistentObject:(PMSQLiteObject*)object
 {
+    __block BOOL succeed = YES;
+    
     [_dbQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
         
         @try
@@ -357,16 +385,22 @@ NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateException";
         }
         @catch (NSException *exception)
         {
+            succeed = NO;
+            
             if ([exception.name isEqualToString:PMSQLiteStoreUpdateException])
                 *rollback = YES;
             else
                 @throw exception;
         }
     }];
+    
+    return succeed;
 }
 
-- (void)_insertPersistentObject:(PMSQLiteObject*)object
+- (BOOL)_insertPersistentObject:(PMSQLiteObject*)object
 {
+    __block BOOL succeed = YES;
+    
     [_dbQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
         
         @try
@@ -388,17 +422,23 @@ NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateException";
         }
         @catch (NSException *exception)
         {
+            succeed = NO;
+            
             if ([exception.name isEqualToString:PMSQLiteStoreUpdateException])
                 *rollback = YES;
             else
                 @throw exception;
         }        
     }];
+    
+    return succeed;
 }
 
-- (void)_updatePersistentObject:(PMSQLiteObject*)object
+- (BOOL)_updatePersistentObject:(PMSQLiteObject*)object
 {
     NSAssert(object.dbID != NSNotFound, @"PersistentObject must have a valid database identifier.");
+    
+    __block BOOL succeed = YES;
     
     [_dbQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
         @try
@@ -411,16 +451,22 @@ NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateException";
         }
         @catch (NSException *exception)
         {
+            succeed = NO;
+            
             if ([exception.name isEqualToString:PMSQLiteStoreUpdateException])
                 *rollback = YES;
             else
                 @throw exception;
         }
     }];
+    
+    return succeed;
 }
 
-- (void)_deletePersistentObject:(PMSQLiteObject*)object
+- (BOOL)_deletePersistentObject:(PMSQLiteObject*)object
 {
+    __block BOOL succeed = YES;
+    
     [_dbQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
         @try
         {
@@ -432,18 +478,24 @@ NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateException";
         }
         @catch (NSException *exception)
         {
+            succeed = NO;
+            
             if ([exception.name isEqualToString:PMSQLiteStoreUpdateException])
                 *rollback = YES;
             else
                 @throw exception;
         }
     }];
+    
+    return succeed;
 }
 
-- (void)_didAccessObjectWithID:(NSInteger)dbID
+- (BOOL)_didAccessObjectWithID:(NSInteger)dbID
 {
     if (dbID == NSNotFound)
-        return;
+        return NO;
+    
+    __block BOOL succeed = YES;
     
     [_dbQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
         @try
@@ -453,12 +505,16 @@ NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateException";
         }
         @catch (NSException *exception)
         {
+            succeed = NO;
+            
             if ([exception.name isEqualToString:PMSQLiteStoreUpdateException])
                 *rollback = YES;
             else
                 @throw exception;
         }
     }];
+    
+    return succeed;
 }
 
 @end

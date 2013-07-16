@@ -55,14 +55,14 @@ extern NSString * const PMPersistentStoreObjectKey;
 
 /*!
  * This method should retrieve from the store the object with the given key identifier. If the object is not found in the store, return nil.
- * @param key The model object identifier.
+ * @param key The model object identifier. Cannot be nil.
  * @return The associated persistent object or nil.
  */
 - (id<PMPersistentObject>)persistentObjectWithKey:(NSString*)key;
 
 /*!
  * This method queries all stored objects for the given type.
- * @param type The model object type.
+ * @param type The model object type. Cannot be nil.
  * @return An array with all stored objects of the given type.
  */
 - (NSArray*)persistentObjectsOfType:(NSString*)type;
@@ -88,12 +88,15 @@ extern NSString * const PMPersistentStoreObjectKey;
  * @param type The model object type. If nil, type is ignored.
  * @param date This is a time offset to query object into the store.
  * @param option Deleting policy can be by creation date, access date or update date.
+ * @return YES if the deletion is successful, otherwise NO.
+ * @discussion This method might operate direclty on the storage without need of performing posterior 'save' of the current persistent store.
  */
-- (void)deleteEntriesOfType:(NSString*)type olderThan:(NSDate*)date policy:(PMOptionDelete)option;
+- (BOOL)deleteEntriesOfType:(NSString*)type olderThan:(NSDate*)date policy:(PMOptionDelete)option;
 
 /*!
  * Call this method to persist changes.
- * @discussion This method is executed in the current thread. 
+ * @return YES if saved successfully, NO otherwise.
+ * @discussion This method is executed in the current thread. A NO value as return indicates that the saving is not successful, not that the saving is not performed. That means that part of the persistent model could be saved, part not.
  */
 - (BOOL)save;
 
