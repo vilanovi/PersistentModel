@@ -13,11 +13,24 @@ extern NSString * const PMObjectContextDidSaveNotification;
 extern NSString * const PMObjectContextSavedObjectsKey;
 extern NSString * const PMObjectContextDeletedObjectsKey;
 
+/*!
+ * TODO
+ */
 @interface PMObjectContext : NSObject
 
+/*!
+ * TODO
+ */
 - (id)initWithPersistentStore:(PMPersistentStore*)persistentStore;
 
+/*!
+ * TODO
+ */
 @property (nonatomic, strong, readonly) PMPersistentStore *persistentStore;
+
+/*!
+ * TODO
+ */
 @property (nonatomic, assign, readonly) BOOL hasChanges;
 
 /*!
@@ -41,15 +54,34 @@ extern NSString * const PMObjectContextDeletedObjectsKey;
  */
 - (NSArray*)registeredObjects;
 
-
+/*!
+ * TODO
+ */
 - (void)insertObject:(PMBaseObject*)object;
+
+/*!
+ * TODO
+ */
 - (void)deleteObject:(PMBaseObject*)object;
 
+/*!
+ * TODO
+ */
 - (void)save;
+
+/*!
+ * TODO
+ */
 - (void)saveWithCompletionBlock:(void (^)(BOOL succeed))completionBlock;
 
+/*!
+ * TODO
+ */
 - (void)mergeChangesFromContextDidSaveNotification:(NSNotification*)notification;
 
+/*!
+ * TODO
+ */
 - (NSArray*)objectsOfClass:(Class)objectClass;
 
 @end
