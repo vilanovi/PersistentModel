@@ -79,6 +79,10 @@
  */
 - (NSString*)mapKey:(NSString*)key;
 
+@end
+
+@interface PMKeyMappingObject (KeyValueCoding)
+
 /*!
  * Validation method. Used within KVC validation. Subclasses might override this method (calling super if validation is not required) in order to perform validation.
  * @param ioValue Pointer to the value to be validated.
@@ -91,7 +95,7 @@
 - (BOOL)validateValue:(inout __autoreleasing id *)ioValue forMappedKey:(NSString*)key firingKey:(NSString*)firingKey error:(out NSError *__autoreleasing *)outError;
 
 /*!
- * Equivalent of "-setValue:forKey:" but for already mapped keys. 
+ * Equivalent of "-setValue:forKey:" but for already mapped keys.
  * @param value The value to set.
  * @param key The mapped key (property name) to assign the new value.
  * @discussion This method sets directly the value for the given key without performing any kind of validation. If you want to have the validation layer, use '-setValue:forKey' instead.

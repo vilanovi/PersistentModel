@@ -78,11 +78,6 @@
     [_mappings removeObjectsForKeys:keys];
 }
 
-- (BOOL)validateValue:(inout __autoreleasing id *)ioValue forMappedKey:(NSString*)key firingKey:(NSString*)firingKey error:(out NSError *__autoreleasing *)outError
-{
-    return [self validateValue:ioValue forKey:key error:outError];
-}
-
 - (NSString*)mapKey:(NSString*)key
 {
     NSString *mappedKey = [_mappings valueForKey:key];
@@ -91,11 +86,6 @@
         return mappedKey;
     
     return key;
-}
-
-- (void)setValue:(id)value forMappedKey:(NSString *)key
-{
-    [super setValue:value forKey:key];
 }
 
 #pragma mark Key Value Coding
@@ -152,6 +142,22 @@
     }
     
     return nil;
+}
+
+@end
+
+#pragma mark -
+
+@implementation PMKeyMappingObject (KeyValueCoding)
+
+- (BOOL)validateValue:(inout __autoreleasing id *)ioValue forMappedKey:(NSString*)key firingKey:(NSString*)firingKey error:(out NSError *__autoreleasing *)outError
+{
+    return [self validateValue:ioValue forKey:key error:outError];
+}
+
+- (void)setValue:(id)value forMappedKey:(NSString *)key
+{
+    [super setValue:value forKey:key];
 }
 
 @end
