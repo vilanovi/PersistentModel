@@ -198,8 +198,19 @@ NSString * const PMObjectContextDeletedObjectsKey = @"PMObjectContextDeletedObje
 
 - (void)mergeChangesFromContextDidSaveNotification:(NSNotification*)notification
 {
-    if (notification.object == self)
+    PMObjectContext *savedContext = notification.object;
+    
+    // If it is the same context, nothing to do
+    if (savedContext == self)
         return;
+    
+    // If both context doesn't share the same persistent store, nothing to do
+    if (savedContext.persistentStore != _persistentStore && _persistentStore != nil)
+        return;
+    
+//    // If both context doesn't share the same persistent store url, nothing to do
+//    if (![[savedContext.persistentStore.url path] isEqualToString:[_persistentStore.url path]])
+//        return;
     
     NSArray *savedObjects = [notification.userInfo valueForKey:PMObjectContextSavedObjectsKey];
     
