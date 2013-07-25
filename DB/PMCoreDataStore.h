@@ -27,6 +27,9 @@ typedef enum __PMCoreDataStoreType
  */
 @interface PMCoreDataStore : PMPersistentStore
 
+/// ---------------------------------------------------------------------------------------------------------
+/// @name Creating instances and initializing
+/// ---------------------------------------------------------------------------------------------------------
 /*!
  * Default initializer.
  * @param url The url of the persistent store.
@@ -34,6 +37,10 @@ typedef enum __PMCoreDataStoreType
  * @return The initialized instance.
  */
 - (id)initWithURL:(NSURL *)url storeType:(PMCoreDataStoreType)type;
+
+/// ---------------------------------------------------------------------------------------------------------
+/// @name Main attributes
+/// ---------------------------------------------------------------------------------------------------------
 
 /*!
  * The current store type.

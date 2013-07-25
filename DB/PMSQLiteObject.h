@@ -14,6 +14,10 @@
  */
 @interface PMSQLiteObject : NSObject <PMPersistentObject>
 
+/// ---------------------------------------------------------------------------------------------------------
+/// @name Creating instances and initializing
+/// ---------------------------------------------------------------------------------------------------------
+
 /*!
  * Initializer to identify the current PersistentObject to a database entry.
  * @param dbID The database identifeir.
@@ -28,6 +32,10 @@
  * @return The initialized instance.
  */
 - (id)initWithKey:(NSString*)key andType:(NSString*)type;
+
+/// ---------------------------------------------------------------------------------------------------------
+/// @name Main Attributes
+/// ---------------------------------------------------------------------------------------------------------
 
 /*!
  * SQLite database identifier.
@@ -45,6 +53,10 @@
  * This property track changes of the current PersistentObject.
  */
 @property (nonatomic, assign, readonly) BOOL hasChanges;
+
+/// ---------------------------------------------------------------------------------------------------------
+/// @name Persistent Store Management
+/// ---------------------------------------------------------------------------------------------------------
 
 /*!
  * Weak reference to the persistent store the current object is related to.
