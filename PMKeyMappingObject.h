@@ -10,30 +10,20 @@
  * This class add multiple-key accessing via KVC to all its properties.
  * You can define multiple mappings to get and set properties via key-value accessing.
  *
- * This class override the KVC methods '-setValue:forKey:', '-valueForKey:', 'setValue:forUndefinedKey:' and '-valueForUndefinedKey:' in order to perform the multiple key-mapping.
+ * This class override the KVC methods `setValue:forKey:`, `valueForKey`, `setValue:forUndefinedKey:` and `valueForUndefinedKey:` in order to perform the multiple key-mapping.
  *
  * A mapping is defined by a dictionary, where keys are the additional names for the properties and values are the real name.
+ * For example, if a object has the properties "users" and "projectName" we could define the mapping `{"list_of_users": "users", "server_project_name": "projectName"}`.
  *
- * If a object has the properties @"users" and @"projectName" you could define the following mapping:
+ * Then, after initialyzing the subclass of `PMKeyMappingObject` with this mapping, you can get and set properties via the new names via Key-Value-Coding.
  *
- *      NSDictionary *mapping = @{@"list_of_users": @"users",
- *                                @"server_project_name": @"projectName"};
- *
- * Then, after initialyzing your subclass of PMKeyMappingObject with this mapping, you can get & set properties via the new names.
- *
- *      MyKeyMappingObjectSubclass *object = [MyKeyMappingObjectSubclass alloc] initWithMapping:mapping];
- *      
- *      object.users = @[@"John", @"Anne"];
- *      NSArray *users = [object valueForKey:@"list_of_users"];
- *      NSLog(@"Users: %@", users.description) // $> <NSArray> [John, Anne]
- *
- *      [object setValue:@"The Big Wave" forKey:@"server_project_name"];
- *      NSString *name = object.projectName;
- *      NSLog(@"Project Name: %@", name); // $>The Big Wave
- *
- * This class also supports value validation. In order to validate your properties you can override the custom method '-validateValue:forMappedKey:firingKey:error:' or the default KVC validation methods '-validateValue:forKey:error:' or '-validate<PropertyName>:error:'. In all cases we will use the already mapped keys.
+ * This class also supports value validation. In order to validate your properties you can override the custom method `validateValue:forMappedKey:firingKey:error:` or the default KVC validation methods `validateValue:forKey:error:` or `validate<PropertyName>:error:`. In all cases we will use the already mapped keys.
  */
 @interface PMKeyMappingObject : NSObject
+
+/// ---------------------------------------------------------------------------------------------------------
+/// @name Creating instances and initializing
+/// ---------------------------------------------------------------------------------------------------------
 
 /*!
  * Default initializer.
@@ -42,6 +32,10 @@
  */
 - (id)initWithMapping:(NSDictionary*)mapping;
 
+
+/// ---------------------------------------------------------------------------------------------------------
+/// @name Managing Mappings
+/// ---------------------------------------------------------------------------------------------------------
 /*!
  * The current dictionary with key-mappings.
  */
@@ -90,15 +84,15 @@
  * @param firingKey The key with which has been invoked the key value setting (before the key-mapping).
  * @param outError If error, should assign the error to that pointer.
  * @return YES if validation is not required or if the validation succeed. NO if error (specify error in outError).
- * @discussion This method by default call the KVC validation method '-validationValue:forKey:error:', whose search for custom validation methods '-validate<PropertyName>:error:'. You can override this method in order to perform validation (calling supper if validation not required) or override/implement the default KVC validation pattern.
+ * @discussion This method by default call the KVC validation method `validationValue:forKey:error:`, whose search for custom validation methods `validate<PropertyName>:error:`. You can override this method in order to perform validation (calling supper if validation not required) or override/implement the default KVC validation pattern.
  */
 - (BOOL)validateValue:(inout __autoreleasing id *)ioValue forMappedKey:(NSString*)key firingKey:(NSString*)firingKey error:(out NSError *__autoreleasing *)outError;
 
 /*!
- * Equivalent of "-setValue:forKey:" but for already mapped keys.
+ * Equivalent of `setValue:forKey:` but for already mapped keys.
  * @param value The value to set.
  * @param key The mapped key (property name) to assign the new value.
- * @discussion This method sets directly the value for the given key without performing any kind of validation. If you want to have the validation layer, use '-setValue:forKey' instead.
+ * @discussion This method sets directly the value for the given key without performing any kind of validation. If you want to have the validation layer, use `setValue:forKey` instead.
  */
 - (void)setValue:(id)value forMappedKey:(NSString *)key;
 

@@ -41,12 +41,20 @@ extern NSString * const PMPersistentStoreObjectKey;
  */
 @interface PMPersistentStore : NSObject
 
+/// ---------------------------------------------------------------------------------------------------------
+/// @name Creating instances and initializing
+/// ---------------------------------------------------------------------------------------------------------
+
 /*!
  * Default initializer.
  * @param url The url of the persistent store. Cannot be nil.
  * @return The initialized instance.
  */
 - (id)initWithURL:(NSURL*)url;
+
+/// ---------------------------------------------------------------------------------------------------------
+/// @name Main Methods
+/// ---------------------------------------------------------------------------------------------------------
 
 /*!
  * The url of the persistent store.
@@ -72,14 +80,14 @@ extern NSString * const PMPersistentStoreObjectKey;
  * @param key The model object identifier. Cannot be nil.
  * @param type The model object type. Cannot be nil.
  * @return The persistent object.
- * @discussion If already exists an object with the given key, this method raises a NSInvalidArgumentException exception with the existent object in the userInfo exception field (accessible via the key 'PMPersistentStoreObjectKey'). In order to persist changes it is needed to call the method 'save'.
+ * @discussion If already exists an object with the given key, this method raises a NSInvalidArgumentException exception with the existent object in the userInfo exception field (accessible via the key `PMPersistentStoreObjectKey`). In order to persist changes it is needed to call the method `save`.
  */
 - (id<PMPersistentObject>)createPersistentObjectWithKey:(NSString*)key ofType:(NSString*)type;
 
 /*!
  * Removes a persistent object from the store.
  * @param key The model object identifier. Cannot be nil.
- * @discussion In order to persist changes it is needed to call the method 'save'.
+ * @discussion In order to persist changes it is needed to call the method `save`.
  */
 - (void)deletePersistentObjectWithKey:(NSString*)key;
 
@@ -89,7 +97,7 @@ extern NSString * const PMPersistentStoreObjectKey;
  * @param date This is a time offset to query object into the store.
  * @param option Deleting policy can be by creation date, access date or update date.
  * @return YES if the deletion is successful, otherwise NO.
- * @discussion This method might operate direclty on the storage without need of performing posterior 'save' of the current persistent store.
+ * @discussion This method might operate direclty on the storage without need of performing posterior `save` of the current persistent store.
  */
 - (BOOL)deleteEntriesOfType:(NSString*)type olderThan:(NSDate*)date policy:(PMOptionDelete)option;
 

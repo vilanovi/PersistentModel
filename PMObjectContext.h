@@ -21,7 +21,7 @@ extern NSString * const PMObjectContextDidSaveNotification;
 extern NSString * const PMObjectContextSavedObjectsKey;
 
 /*!
- * Key to be used in the UserInfo dictionary of the 'PMObjectContextDidSaveNotification' notification to retrieve the deleted objects.
+ * @const PMObjectContextDeletedObjectsKey Key to be used in the UserInfo dictionary of the 'PMObjectContextDidSaveNotification' notification to retrieve the deleted objects.
  */
 extern NSString * const PMObjectContextDeletedObjectsKey;
 
@@ -30,22 +30,30 @@ extern NSString * const PMObjectContextDeletedObjectsKey;
  */
 @interface PMObjectContext : NSObject
 
+/// ---------------------------------------------------------------------------------------------------------
+/// @name Creating instances and initializing
+/// ---------------------------------------------------------------------------------------------------------
+
 /*!
  * Default initializer. 
  * @param persistentStore The persistent store to use. If nil any peristent store will be used and model won't be able to persist.
  */
 - (id)initWithPersistentStore:(PMPersistentStore*)persistentStore;
 
-/*!
- * The current used persistent store.
- */
-@property (nonatomic, strong, readonly) PMPersistentStore *persistentStore;
+/// ---------------------------------------------------------------------------------------------------------
+/// @name Registering changes
+/// ---------------------------------------------------------------------------------------------------------
 
 /*!
  * Boolean indicating if there are changes to save or not. YES if any new object has been inserted, deleted or modifyed, otherwise NO
  * @discussion This property works withing the 'hasChanges' property of 'PMBaseObject'. Remember that in 'PMBaseObject' changes are tracked via KVC methods. If you modify an object directly is your responsibility to set the flag 'hasChanges' to YES.
  */
 @property (nonatomic, assign, readonly) BOOL hasChanges;
+
+
+/// ---------------------------------------------------------------------------------------------------------
+/// @name Object manipulation
+/// ---------------------------------------------------------------------------------------------------------
 
 /*!
  * Returns the object for for the given identifier key.
@@ -82,6 +90,15 @@ extern NSString * const PMObjectContextDeletedObjectsKey;
  * @discussion This method will unregister the object from the context by setting the object.context to nil and stop tracking changes of it. To persist changes a 'save' is required.
  */
 - (void)deleteObject:(PMBaseObject*)object;
+
+/// ---------------------------------------------------------------------------------------------------------
+/// @name Dealing with persistence
+/// ---------------------------------------------------------------------------------------------------------
+
+/*!
+ * The current used persistent store.
+ */
+@property (nonatomic, strong, readonly) PMPersistentStore *persistentStore;
 
 /*!
  * Saves the current context into the persistent store. This method is equivalent to '-saveWithCompletionBlock:' with a NULL block as argument.

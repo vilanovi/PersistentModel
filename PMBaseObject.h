@@ -15,18 +15,19 @@ extern NSString * const PMBaseObjectNilKeyException;
  *
  * In order to persist properties, you can choose between:
  *       1. Manually encode and decode your properties using the NSCoding protocol methods
- *       2. Override the method "+keysForPersistentValues" and return a set of strings with the names of those properties you want to persist.
+ *       2. Override the method `keysForPersistentValues` and return a set of strings with the names of those properties you want to persist.
  *
- * Also, this class is subclass of "PMKeyMappingObject". That means you can add additional key-value mappings to get and set properties with multiple names.
- * In order to implement this functionality override the static method "+dictionaryWithKeysForMappingKeys" and return the additional mappings between the property names and custom names.
- * In the dictionary, the key is the additional key-value accessor name and the value is the property name:
+ * Also, this class is subclass of `PMKeyMappingObject`. That means you can add additional key-value mappings to get and set properties with multiple names.
+ * In order to implement this functionality override the static method `dictionaryWithKeysForMappingKeys` and return the additional mappings between the property names and custom names.
+ * In the dictionary, the key is the additional key-value accessor name and the value is the property name.
  *
- *   + (NSDictionary*)dictionaryWithKeysForMappingKeys
- *   {
- *       return @{@"my_custom_key_name" : @"key"};
- *   }
  */
 @interface PMBaseObject : PMKeyMappingObject <NSCoding, NSCopying>
+
+
+/// ---------------------------------------------------------------------------------------------------------
+/// @name Creating instances and initializing
+/// ---------------------------------------------------------------------------------------------------------
 
 /*!
  * Default init method.
@@ -70,11 +71,34 @@ extern NSString * const PMBaseObjectNilKeyException;
  */
 + (PMBaseObject*)baseObjectWithDictionary:(NSDictionary*)dictionary inContext:(PMObjectContext*)context;
 
-/*! 
+/// ---------------------------------------------------------------------------------------------------------
+/// @name Object context management
+/// ---------------------------------------------------------------------------------------------------------
+
+/*!
  * The context where the object is registered to.
  * @discussion This value can be nil if the object is not registered in any context.
  */
 @property (nonatomic, weak, readonly) PMObjectContext *context;
+
+/*!
+ * In order to delete an object from the context, call this method.
+ * @discussion This method invokes automatically the method 'deleteObject' from the registered PMObjectContext.
+ */
+- (void)deleteObjectFromContext;
+
+/*!
+ * Use this method in order to regsiter a new object to the context.
+ * @param context The context to regsiter the current object.
+ * @return YES if succeed, otherwise NO.
+ * @discussion If another object with the same key is registered in the context, this method will fail to register the new object and return NO.
+ */
+- (BOOL)registerToContext:(PMObjectContext*)context;
+
+
+/// ---------------------------------------------------------------------------------------------------------
+/// @name Main Properties
+/// ---------------------------------------------------------------------------------------------------------
 
 /*! 
  * The unique key that identifies the object 
@@ -93,19 +117,10 @@ extern NSString * const PMBaseObjectNilKeyException;
  */
 @property (nonatomic, assign) BOOL hasChanges;
 
-/*! 
- * In order to delete an object from the context, call this method.
- * @discussion This method invokes automatically the method "-deleteObject:" from the registered PMObjectContext.
- */
-- (void)deleteObjectFromContext;
 
-/*!
- * Use this method in order to regsiter a new object to the context.
- * @param context The context to regsiter the current object.
- * @return YES if succeed, otherwise NO.
- * @discussion If another object with the same key is registered in the context, this method will fail to register the new object and return NO.
- */
-- (BOOL)registerToContext:(PMObjectContext*)context;
+/// ---------------------------------------------------------------------------------------------------------
+/// @name Auxiliar Methods
+/// ---------------------------------------------------------------------------------------------------------
 
 /*!
  * Set of property names that are automatically persistent via KVC access.

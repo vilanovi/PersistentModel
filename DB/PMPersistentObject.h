@@ -7,11 +7,7 @@
 #import <Foundation/Foundation.h>
 
 /*!
- * Persistent objects must implement this protocol to adopt the required schema.
- *
- *  * -------------- * --------------- * ------------------- * ------------- *
- *  |  key (String)  |  type (String)  |  lastUpdate (Date)  |  data (BLOB)  |
- *  * -------------- * --------------- * ------------------- * ------------- *
+ * Persistent objects must implement this protocol to adopt the required schema: `key` (String), `type` (String), `lastUpdate` (Date) and `data` (BLOB).
  */
 @protocol PMPersistentObject <NSObject>
 
