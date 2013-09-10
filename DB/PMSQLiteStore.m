@@ -488,11 +488,11 @@ static NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateExce
     [_dbQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
         @try
         {
-        if (![db executeUpdate:@"DELETE FROM Objects WHERE id = ?", @(object.dbID)])
-            @throw UpdateException;
-            
-        if (![db executeUpdate:@"DELETE FROM Data WHERE id = ?", @(object.dbID)])
-            @throw UpdateException;
+            if (![db executeUpdate:@"DELETE FROM Data WHERE id = ?", @(object.dbID)])
+                @throw UpdateException;
+
+            if (![db executeUpdate:@"DELETE FROM Objects WHERE id = ?", @(object.dbID)])
+                @throw UpdateException;
         }
         @catch (NSException *exception)
         {
