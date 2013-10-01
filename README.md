@@ -13,19 +13,41 @@ Also, *PersistentModel* supports multiple key accessing via KVC, meaning you can
 
 ## Overview###
 
+### Non-Relational Model ###
+
+*PersistentModel* is designed as a non-relational model. What does that mean? That means that there are no relation (by pointers) between your model objects. Instead of that what we do is use an identifier system: each model object has a unique *key* and relations between objects are hold by storing that *key*.
+
+	Relational Model						Non-Relational Model
+	
+	Object A		Object B				Object A		Object B
+	--------		--------				--------		--------
+	int field		int anotherField		int key			int key
+	B objB									int field		int anotherfield
+											int keyB
+
+How do we get the relational objects in that case? we need to use what we call an **ObjectContext**. The ObjectContext is the place where model objects are retained and keept alive and the class responsible of holding the objects and deliver them when needed by implementing methods as *-objectForKey:*.
+
+
+### Description ###
+
 *PersistentModel* can be divided in three parts:
 
 - **Base Object**: Superclass of your persistent objects. Handles relations with the context and have support for multiple key accessing via KVC.
 
 - **Object Context**: Live instances manipulation and management. Responsible of interact with the persistent store and save & load instances to the persistence.
 
-- **Persistent Store**: Persistence layer of the model, data base interactions.
+- **Persistent Store**: Responsible of serializing and deserialize the object context and all the model objects holded by.
 
-Each part can be configured and depending of your needs you must choose the right configuration.
 
 ### Base Objects ###
 
-*TODO*
+Because we are implementing a non-relational model, a **BaseObject**, or model object, contains an identifier or **key**. That key is represented as a *string* and need to be unique, otherwise you won't be able to register the model object into a context holding another object with the same key.
+
+Also, a model object has a weak reference to the context that is registered to. This is very usful in order to navigate through the relations by using the self contained context to retrieve those objects.
+
+In order to create your own model your model classes must be a subclass of **BaseObject** and override the method *+ (NSSet\*)keysForPersistentValues* returning a set of names for all persistent attributes and relational keys. Only those attributes listed in that method will be stored in persitence. The attributes will be accessed, during the serialization action, via KeyValueCoding (KVC). 
+
+The serialization is done via *NSCoding* protocol, that means you can also serialize any custom object implementing the protocol.
 
 ### Object Context ##
 *TODO*
@@ -38,10 +60,10 @@ Each part can be configured and depending of your needs you must choose the righ
 
 Many differents situations can be solved with the *PersistentModel*. Here we present a couple of them where we could appreciate the easy solution provided using this framework (or pattern).
 
-#### Communicating in JSON with an external server ####
+### Communicating in JSON with an external server ###
 *TODO*
 
-#### Using the ObjectContext appropiately ####
+### Using the ObjectContext appropiately ###
 *TODO*
 
 
