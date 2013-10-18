@@ -145,8 +145,7 @@ NSString * const PMObjectContextDeletedObjectsKey = @"PMObjectContextDeletedObje
 
 - (void)saveWithCompletionBlock:(void (^)(BOOL succeed))completionBlock
 {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        
+    void (^saveBlock)() = ^{
         _savingOperationIndex += 1;
         NSInteger currentOperationIndex = _savingOperationIndex;
         
@@ -210,8 +209,18 @@ NSString * const PMObjectContextDeletedObjectsKey = @"PMObjectContextDeletedObje
             
             [[NSNotificationCenter defaultCenter] postNotification:notification];
         }
-        
-    });
+    };
+    
+    if ([NSThread isMainThread])
+    {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            saveBlock();
+        });
+    }
+    else
+    {
+        saveBlock();
+    }
 }
 
 - (void)mergeChangesFromContextDidSaveNotification:(NSNotification*)notification
