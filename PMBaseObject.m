@@ -141,7 +141,7 @@ NSString * const PMBaseObjectNilKeyException = @"PMBaseObjectNilKeyException";
         return baseObject;
     
     if (flag)
-    {
+    {        
         baseObject = [[self alloc] initWithContext:context andKey:key];
         return baseObject;
     }
