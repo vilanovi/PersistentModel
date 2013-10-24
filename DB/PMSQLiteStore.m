@@ -95,11 +95,12 @@ static NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateExce
             if ([resultSet next])
             {
                 persistentObject = [[PMSQLiteObject alloc] initWithDataBaseIdentifier:[resultSet intForColumnIndex:0]];
-                persistentObject.persistentStore = self;
                 persistentObject.key = key;
                 persistentObject.type = [resultSet stringForColumnIndex:1];
                 persistentObject.lastUpdate = [NSDate dateWithTimeIntervalSince1970:[resultSet doubleForColumnIndex:2]];
                 persistentObject.data = [resultSet dataForColumnIndex:3];
+                
+                persistentObject.persistentStore = self;
                 
                 [resultSet close];
             }
@@ -137,12 +138,13 @@ static NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateExce
         while ([resultSet next])
         {
             PMSQLiteObject *persistentObject = [[PMSQLiteObject alloc] initWithDataBaseIdentifier:[resultSet intForColumnIndex:0]];
-            persistentObject.persistentStore = self;
             persistentObject.key = [resultSet stringForColumnIndex:1];
             persistentObject.type = [resultSet stringForColumnIndex:2];
             persistentObject.lastUpdate = [NSDate dateWithTimeIntervalSince1970:[resultSet doubleForColumnIndex:3]];
             persistentObject.data = [resultSet dataForColumnIndex:4];
-                        
+            
+            persistentObject.persistentStore = self;
+            
             [array addObject:persistentObject];
             [dbIDs addObject:@(persistentObject.dbID)];
         }
@@ -461,7 +463,7 @@ static NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateExce
     [_dbQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
         @try
         {
-            if (![db executeUpdate:@"UPDATE Objects SET type = ?, updateDate = ?, accessDate = ? WHERE id = ?", object.type, object.lastUpdate, object.lastUpdate, @(object.dbID)])
+            if (![db executeUpdate:@"UPDATE Objects SET type = ?, updateDate = ? WHERE id = ?", object.type, object.lastUpdate, @(object.dbID)])
                 @throw UpdateException;
             
             if(![db executeUpdate:@"UPDATE Data SET data = ? WHERE id = ?", object.data, @(object.dbID)])

@@ -272,6 +272,7 @@ NSString * const PMObjectContextDeletedObjectsKey = @"PMObjectContextDeletedObje
         if (!baseObject)
         {
             baseObject = [self _baseObjectFromModelObject:mo];
+            baseObject.hasChanges = NO;
             [self insertObject:baseObject];
         }
         
@@ -306,6 +307,7 @@ NSString * const PMObjectContextDeletedObjectsKey = @"PMObjectContextDeletedObje
     if (object)
     {
         PMBaseObject *baseObject = [self _baseObjectFromModelObject:object];
+        baseObject.hasChanges = NO;
         [self insertObject:baseObject];
         
         return baseObject;
