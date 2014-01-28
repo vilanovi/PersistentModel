@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
   s.social_media_url = "http://twitter.com/joan_mh"
   s.platform     = :ios, '6.0'
   s.source       = { :git => "https://github.com/vilanovi/PersistentModel.git", :tag => "1.0.0" }
-  s.source_files = 'UIColor+Additions.{h,m}', 'DB/*'
+  s.source_files = '*.{h,m}', 'DB/*'
   s.framework  = 'UIKit'
   s.dependency   'FMDB'
   s.requires_arc = true
