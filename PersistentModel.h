@@ -24,4 +24,3 @@
 
 #import "PMPersistentStore.h"
 #import "PMSQLiteStore.h"
-#import "PMCoreDataStore.h"

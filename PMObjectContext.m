@@ -25,8 +25,6 @@
 #import "PMObjectContext.h"
 
 #import "PMBaseObject.h"
-
-#import "PMCoreDataObject.h"
 #import "PMPersistentObject.h"
 #import "PMPersistentStore.h"
 
@@ -265,7 +263,7 @@ NSString * const PMObjectContextDeletedObjectsKey = @"PMObjectContextDeletedObje
     
     NSMutableArray *array = [NSMutableArray array];
     
-    for (PMCoreDataObject *mo in result)
+    for (id <PMPersistentObject> mo in result)
     {
         PMBaseObject *baseObject = [_objects valueForKey:mo.key];
         
