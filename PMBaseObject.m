@@ -125,6 +125,23 @@ NSString * const PMBaseObjectNilKeyException = @"PMBaseObjectNilKeyException";
     return copy;
 }
 
+#pragma mark KVC Validation
+
+// In case key is a number, we must convert it to an string
+- (BOOL)validateKey:(inout __autoreleasing id *)ioValue error:(out NSError *__autoreleasing *)outError
+{
+    id value = *ioValue;
+    
+    if ([value isKindOfClass:[NSNumber class]])
+    {
+        *ioValue = [NSString stringWithFormat:@"%d", [value intValue]];
+    }
+    
+    return YES;
+}
+
+#pragma mark Public Methods
+
 + (PMBaseObject*)baseObjectWithKey:(NSString *)key inContext:(PMObjectContext*)context allowsCreation:(BOOL)flag
 {
     if (key == nil)
@@ -162,6 +179,11 @@ NSString * const PMBaseObjectNilKeyException = @"PMBaseObjectNilKeyException";
         if (webKey)
             break;
     }
+    
+    // In case the webkey is formatted as an integer, we build a string from it.
+    // This will allow the system to work with web keys being integers, even if they are stored as strings.
+    if ([webKey isKindOfClass:[NSNumber class]])
+        webKey = [NSString stringWithFormat:@"%d", webKey.intValue];
     
     if (!webKey)
         return nil;

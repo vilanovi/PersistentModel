@@ -248,26 +248,31 @@ static NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateExce
             break;
     }
     
+    NSString *query0 = nil;
     NSString *query1 = nil;
     NSString *query2 = nil;
 
     if (type && ! date)
     {
+        query0 = [NSString stringWithFormat:@"SELECT Objects.key FROM Objects WHERE type = \"%@\"",type];
         query1 = [NSString stringWithFormat:@"DELETE FROM Data WHERE id IN (SELECT Objects.id FROM Objects WHERE type = \"%@\")",type];
         query2 = [NSString stringWithFormat:@"DELETE FROM Objects WHERE type = \"%@\"", type];
     }
     else if (!type && date)
     {
+        query0 = [NSString stringWithFormat:@"SELECT Objects.key FROM Objects WHERE %@ < %f",optionDate, [date timeIntervalSince1970]];
         query1 = [NSString stringWithFormat:@"DELETE FROM Data WHERE id IN (SELECT Objects.id FROM Objects WHERE %@ < %f)",optionDate, [date timeIntervalSince1970]];
         query2 = [NSString stringWithFormat:@"DELETE FROM Objects WHERE %@ < %f",optionDate, [date timeIntervalSince1970]];
     }
     else if (type && date)
     {
+        query0 = [NSString stringWithFormat:@"SELECT Objects.key FROM Objects WHERE type = \"%@\" AND %@ < %f)", type, optionDate, [date timeIntervalSince1970]];
         query1 = [NSString stringWithFormat:@"DELETE FROM Data WHERE id IN (SELECT Objects.id FROM Objects WHERE type = \"%@\" AND %@ < %f)", type, optionDate, [date timeIntervalSince1970]];
         query2 = [NSString stringWithFormat:@"DELETE FROM Objects WHERE type = \"%@\" AND %@ < %f",type, optionDate, [date timeIntervalSince1970]];
     }
     else //if (!type && !date)
     {
+        query0 = @"SELECT Objects.key FROM Objects";
         query1 = @"DELETE FROM Data";
         query2 = @"DELETE FROM Objects";
     }
@@ -277,11 +282,25 @@ static NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateExce
     [_dbQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
         @try
         {
+            FMResultSet *resultSet = [db executeQuery:query0];
+            
+            NSMutableArray *keys = [NSMutableArray array];
+            while ([resultSet next])
+            {
+                NSString *key = [resultSet stringForColumnIndex:0];
+                [keys addObject:key];
+            }
+            
+            [resultSet close];
+            
             if(![db executeUpdate:query1])
                 @throw UpdateException;
             
             if (![db executeUpdate:query2])
                 @throw UpdateException;
+            
+            // Once here, no exceptions happened!
+            [_dictionary removeObjectsForKeys:keys];
         }
         @catch (NSException *exception)
         {

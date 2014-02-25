@@ -79,7 +79,7 @@ extern NSString * const PMBaseObjectNilKeyException;
  * @param flag If NO, this method will return only previously created objects and won't create new instances for the given key.
  * @discussion If initializing the object with a repeated key for the given context, this method retuns nil.
  */
-+ (PMBaseObject*)baseObjectWithKey:(NSString *)key inContext:(PMObjectContext*)context allowsCreation:(BOOL)flag;
++ (instancetype)baseObjectWithKey:(NSString *)key inContext:(PMObjectContext*)context allowsCreation:(BOOL)flag;
 
 /*!
  * Static method for creating and initializing from a dictionary.
@@ -87,7 +87,7 @@ extern NSString * const PMBaseObjectNilKeyException;
  * @param context The context to register the object. Can be nil.
  * @discussion If the key is not contained in the dictionary or already exists an object with this key in the given context, the method returns nil.
  */
-+ (PMBaseObject*)baseObjectWithDictionary:(NSDictionary*)dictionary inContext:(PMObjectContext*)context;
++ (instancetype)baseObjectWithDictionary:(NSDictionary*)dictionary inContext:(PMObjectContext*)context;
 
 /// ---------------------------------------------------------------------------------------------------------
 /// @name Object context management
@@ -120,6 +120,7 @@ extern NSString * const PMBaseObjectNilKeyException;
 
 /*! 
  * The unique key that identifies the object 
+ * @discussion Because this class allows to set values via KVC, if the key is wrapped inside an integer and not a string, the PersistentModel will convert automatically the key to a string.
  */
 @property (nonatomic, strong) NSString *key;
 
