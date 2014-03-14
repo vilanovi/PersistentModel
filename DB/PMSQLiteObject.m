@@ -56,7 +56,7 @@
 
 - (NSString*)description
 {
-    return [NSString stringWithFormat:@"%@: <id:%d> <key:%@> <type:%@> <lastUpdate:%@> <dataLength:%d>",[super description], _dbID, _key, _type, _lastUpdate.description, _data.length];
+    return [NSString stringWithFormat:@"%@: <id:%ld> <key:%@> <type:%@> <lastUpdate:%@> <dataLength:%ld>",[super description], (long)_dbID, _key, _type, _lastUpdate.description, (long)_data.length];
 }
 
 - (BOOL)isEqual:(id)object
@@ -69,7 +69,7 @@
 
 - (NSUInteger)hash
 {
-    NSString *string = [NSString stringWithFormat:@"%d-%@",_dbID, _key];
+    NSString *string = [NSString stringWithFormat:@"%ld-%@",(long)_dbID, _key];
     return string.hash;
 }
 
