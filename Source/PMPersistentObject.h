@@ -1,5 +1,5 @@
 //
-//  PMSQLiteObject_Private.h
+//  PMPersistentObject.h
 //  Created by Joan Martin.
 //  Take a look to my repos at http://github.com/vilanovi
 //
@@ -22,17 +22,31 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE
 
-#import "PMSQLiteObject.h"
+#import <Foundation/Foundation.h>
 
-/*!
- * Main category extension for private methods.
- */
-@interface PMSQLiteObject ()
+/**
+ * Persistent objects must implement this protocol to adopt the required schema: `key` (String), `type` (String), `lastUpdate` (Date) and `data` (BLOB).
+ **/
+@protocol PMPersistentObject <NSObject>
 
-/*!
- * Use this method to modify the readonly 'hasChanges' property in a 'PMSQLiteObject'.
- * @param hasChanges Flag indicating if has changes.
- */
-- (void)setHasChanges:(BOOL)hasChanged;
+/**
+ * Used to identify the model object.
+ **/
+@property (nonatomic, readonly) NSString *key;
+
+/**
+ * Used to identify the type of the model object.
+ **/
+@property (nonatomic, readonly) NSString *type;
+
+/**
+ * Used to retrieve the last update of the model object.
+ **/
+@property (nonatomic) NSDate *lastUpdate;
+
+/**
+ * Used to store the model object data.
+ **/
+@property (nonatomic) NSData *data;
 
 @end

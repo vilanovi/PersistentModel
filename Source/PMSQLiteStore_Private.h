@@ -1,5 +1,5 @@
 //
-//  PMSQLiteStore.h
+//  PMSQLiteStore_Private.h
 //  Created by Joan Martin.
 //  Take a look to my repos at http://github.com/vilanovi
 //
@@ -22,30 +22,20 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE
 
-#import "PMPersistentStore.h"
+#import "PMSQLiteStore.h"
 
 @class PMSQLiteObject;
 
-/*!
- * SQLite implementation for the PMPersistentStore.
- *
- * This class uses the FMDB SQLite database management.
- * You can download the latest version in https://github.com/ccgus/fmdb
- */
-@interface PMSQLiteStore : PMPersistentStore
+/**
+ * Main category extension for private methods.
+ **/
+@interface PMSQLiteStore ()
 
-/// ---------------------------------------------------------------------------------------------------------
-/// @name Managing the Store
-/// ---------------------------------------------------------------------------------------------------------
-
-/*!
- * Call this method to close the store.
- */
-- (void)closeStore;
-
-/*!
- * Call this method to clean the current cached persisted objects.
- */
-- (void)cleanCache;
+/**
+ * Use this method to notify the udpate of a persistent object.
+ * @param object The persistent object.
+ * @discussion PMSQLiteObjects uses this method to notify changes to the persistent store.
+ **/
+- (void)pmd_didChangePersistentObject:(PMSQLiteObject*)object;
 
 @end

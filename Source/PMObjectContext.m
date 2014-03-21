@@ -84,7 +84,7 @@ NSString * const PMObjectContextDeletedObjectsKey = @"PMObjectContextDeletedObje
     PMBaseObject* object = [_objects valueForKey:key];
     
     if (!object)
-        object = [self _baseObjectFromPersistentStoreWithKey:key];
+        object = [self pmd_baseObjectFromPersistentStoreWithKey:key];
     
     return object;
 }
@@ -164,7 +164,7 @@ NSString * const PMObjectContextDeletedObjectsKey = @"PMObjectContextDeletedObje
             if (object.hasChanges)
             {
                 shouldSaveCoreDataContext = YES;
-                [self _updatePersistentModelObjectOfBaseObject:object];
+                [self pmd_updatePersistentModelObjectOfBaseObject:object];
                 object.hasChanges = NO;
                 [savedObjects addObject:object];
             }
@@ -269,7 +269,7 @@ NSString * const PMObjectContextDeletedObjectsKey = @"PMObjectContextDeletedObje
         
         if (!baseObject)
         {
-            baseObject = [self _baseObjectFromModelObject:mo];
+            baseObject = [self pmd_baseObjectFromModelObject:mo];
             baseObject.hasChanges = NO;
             [self insertObject:baseObject];
         }
@@ -282,7 +282,7 @@ NSString * const PMObjectContextDeletedObjectsKey = @"PMObjectContextDeletedObje
 
 #pragma mark Private Methods
 
-- (void)_updatePersistentModelObjectOfBaseObject:(PMBaseObject*)baseObject
+- (void)pmd_updatePersistentModelObjectOfBaseObject:(PMBaseObject*)baseObject
 {    
     NSMutableData *data = [NSMutableData data];
     NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
@@ -298,23 +298,23 @@ NSString * const PMObjectContextDeletedObjectsKey = @"PMObjectContextDeletedObje
     object.data = data;
 }
 
-- (PMBaseObject*)_baseObjectFromPersistentStoreWithKey:(NSString*)key
+- (PMBaseObject*)pmd_baseObjectFromPersistentStoreWithKey:(NSString*)key
 {
     id<PMPersistentObject> object = [_persistentStore persistentObjectWithKey:key];
     
     if (object)
     {
-        PMBaseObject *baseObject = [self _baseObjectFromModelObject:object];
+        PMBaseObject *baseObject = [self pmd_baseObjectFromModelObject:object];
         baseObject.hasChanges = NO;
         [self insertObject:baseObject];
-        
+
         return baseObject;
     }
     
     return nil;
 }
 
-- (PMBaseObject*)_baseObjectFromModelObject:(id<PMPersistentObject>)modelObject
+- (PMBaseObject*)pmd_baseObjectFromModelObject:(id<PMPersistentObject>)modelObject
 {    
     NSAssert(modelObject != nil, @"ModelObject should not be nil");
     NSAssert(modelObject.key != nil, @"Model Object of type %@ has a key == ", modelObject.type, modelObject.key);

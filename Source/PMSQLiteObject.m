@@ -73,7 +73,7 @@
     return string.hash;
 }
 
-#pragma mark Private Methods
+#pragma mark Properties
 
 - (void)setDbID:(NSInteger)dbID
 {
@@ -85,7 +85,7 @@
     _hasChanges = hasChanges;
     
     if (_hasChanges)
-        [_persistentStore didChangePersistentObject:self];
+        [_persistentStore pmd_didChangePersistentObject:self];
 }
 
 - (void)setLastUpdate:(NSDate *)lastUpdate

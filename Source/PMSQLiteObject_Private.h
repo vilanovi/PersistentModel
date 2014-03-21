@@ -1,5 +1,5 @@
 //
-//  PMSQLiteStore_Private.h
+//  PMSQLiteObject_Private.h
 //  Created by Joan Martin.
 //  Take a look to my repos at http://github.com/vilanovi
 //
@@ -22,20 +22,17 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE
 
-#import "PMSQLiteStore.h"
+#import "PMSQLiteObject.h"
 
-@class PMSQLiteObject;
-
-/*!
+/**
  * Main category extension for private methods.
- */
-@interface PMSQLiteStore ()
+ **/
+@interface PMSQLiteObject ()
 
-/*!
- * Use this method to notify the udpate of a persistent object.
- * @param object The persistent object.
- * @discussion PMSQLiteObjects uses this method to notify changes to the persistent store.
- */
-- (void)didChangePersistentObject:(PMSQLiteObject*)object;
+/**
+ * Use this method to modify the readonly 'hasChanges' property in a 'PMSQLiteObject'.
+ * @param hasChanges Flag indicating if has changes.
+ **/
+- (void)pmd_setHasChanges:(BOOL)hasChanged;
 
 @end

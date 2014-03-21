@@ -66,11 +66,16 @@ static NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateExce
             else
             {
                 _dbQueue = [FMDatabaseQueue databaseQueueWithPath:[url path]];
-                [self _createTables];
+                [self pmd_createTables];
             }
         }
     }
     return self;
+}
+
+- (void)dealloc
+{
+    [_dbQueue close];
 }
 
 #pragma mark Super Methods
@@ -111,7 +116,7 @@ static NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateExce
     }
     
     if (persistentObject)
-        [self _didAccessObjectWithID:persistentObject.dbID];
+        [self pmd_didAccessObjectWithID:persistentObject.dbID];
     
     return persistentObject;
 }
@@ -153,7 +158,7 @@ static NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateExce
     }];
 
     for (NSNumber *dbID in dbIDs)
-        [self _didAccessObjectWithID:[dbID integerValue]];
+        [self pmd_didAccessObjectWithID:[dbID integerValue]];
     
     return array;
 }
@@ -335,23 +340,23 @@ static NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateExce
         // -- Inserted Objects -- //
         for (PMSQLiteObject *object in insertedObjects)
         {
-            BOOL flag = [self _insertPersistentObject:object];
+            BOOL flag = [self pmd_insertPersistentObject:object];
             success = success || flag;
         }
         
         // -- Deleted Objects -- //
         for (PMSQLiteObject *object in deletedObjects)
         {
-            BOOL flag = [self _deletePersistentObject:object];
+            BOOL flag = [self pmd_deletePersistentObject:object];
             success = success || flag;
         }
         
         // -- Updated Objects -- //
         for (PMSQLiteObject *object in updatedObjects)
         {
-            BOOL flag = [self _updatePersistentObject:object];
+            BOOL flag = [self pmd_updatePersistentObject:object];
             if (flag)
-                [object setHasChanges:NO];
+                [object pmd_setHasChanges:NO];
             success = success || flag;
         }
     }
@@ -361,11 +366,6 @@ static NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateExce
 
 #pragma mark Public Methods
 
-- (void)closeStore
-{
-    [_dbQueue close];
-}
-
 - (void)cleanCache
 {
     [_dictionary removeAllObjects];
@@ -373,13 +373,13 @@ static NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateExce
 
 #pragma mark Private Methods
 
-- (void)didChangePersistentObject:(PMSQLiteObject*)object
+- (void)pmd_didChangePersistentObject:(PMSQLiteObject*)object
 {
     if (object.dbID != NSNotFound)
         [_updatedObjects addObject:object];
 }
 
-- (BOOL)_createTables
+- (BOOL)pmd_createTables
 {
     __block BOOL succeed = YES;
     
@@ -405,7 +405,7 @@ static NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateExce
     return succeed;
 }
 
-- (BOOL)_insertEmptyPersistentObject:(PMSQLiteObject*)object
+- (BOOL)pmd_insertEmptyPersistentObject:(PMSQLiteObject*)object
 {
     __block BOOL succeed = YES;
     
@@ -417,7 +417,7 @@ static NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateExce
                 @throw UpdateException;
             
             sqlite_int64 dbID = db.lastInsertRowId;
-            object.dbID = dbID;
+            object.dbID = (long)dbID;
             
             if(![db executeUpdate:@"INSERT INTO Data (id) values (?)", @(dbID)])
                 @throw UpdateException;
@@ -436,7 +436,7 @@ static NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateExce
     return succeed;
 }
 
-- (BOOL)_insertPersistentObject:(PMSQLiteObject*)object
+- (BOOL)pmd_insertPersistentObject:(PMSQLiteObject*)object
 {
     __block BOOL succeed = YES;
     
@@ -454,7 +454,7 @@ static NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateExce
                 @throw UpdateException;
             
             sqlite_int64 dbID = db.lastInsertRowId;
-            object.dbID = dbID;
+            object.dbID = (long)dbID;
             
             if(![db executeUpdate:@"INSERT INTO Data (id, data) values (?, ?)", @(dbID), object.data])
                 @throw UpdateException;
@@ -473,7 +473,7 @@ static NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateExce
     return succeed;
 }
 
-- (BOOL)_updatePersistentObject:(PMSQLiteObject*)object
+- (BOOL)pmd_updatePersistentObject:(PMSQLiteObject*)object
 {
     NSAssert(object.dbID != NSNotFound, @"PersistentObject must have a valid database identifier.");
     
@@ -502,7 +502,7 @@ static NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateExce
     return succeed;
 }
 
-- (BOOL)_deletePersistentObject:(PMSQLiteObject*)object
+- (BOOL)pmd_deletePersistentObject:(PMSQLiteObject*)object
 {
     __block BOOL succeed = YES;
     
@@ -529,7 +529,7 @@ static NSString * const PMSQLiteStoreUpdateException = @"PMSQLiteStoreUpdateExce
     return succeed;
 }
 
-- (BOOL)_didAccessObjectWithID:(NSInteger)dbID
+- (BOOL)pmd_didAccessObjectWithID:(NSInteger)dbID
 {
     if (dbID == NSNotFound)
         return NO;

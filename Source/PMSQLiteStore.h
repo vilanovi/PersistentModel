@@ -1,5 +1,5 @@
 //
-//  PMPersistentObject.h
+//  PMSQLiteStore.h
 //  Created by Joan Martin.
 //  Take a look to my repos at http://github.com/vilanovi
 //
@@ -22,31 +22,26 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE
 
-#import <Foundation/Foundation.h>
+#import "PMPersistentStore.h"
 
-/*!
- * Persistent objects must implement this protocol to adopt the required schema: `key` (String), `type` (String), `lastUpdate` (Date) and `data` (BLOB).
- */
-@protocol PMPersistentObject <NSObject>
+@class PMSQLiteObject;
 
-/*!
- * Used to identify the model object.
- */
-@property (nonatomic, readonly) NSString *key;
+/**
+ * SQLite implementation for the PMPersistentStore.
+ *
+ * This class uses the FMDB SQLite database management.
+ * You can download the latest version in https://github.com/ccgus/fmdb
+ **/
+@interface PMSQLiteStore : PMPersistentStore
 
-/*!
- * Used to identify the type of the model object.
- */
-@property (nonatomic, readonly) NSString *type;
 
-/*!
- * Used to retrieve the last update of the model object.
- */
-@property (nonatomic) NSDate *lastUpdate;
+/** ---------------------------------------------------------------- **
+ *  @name Managing the Store
+ ** ---------------------------------------------------------------- **/
 
-/*!
- * Used to store the model object data.
- */
-@property (nonatomic) NSData *data;
+/**
+ * Call this method to clean the current cached persisted objects.
+ **/
+- (void)cleanCache;
 
 @end

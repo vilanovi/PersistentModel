@@ -32,10 +32,10 @@ NSString * const PMBaseObjectNilKeyException = @"PMBaseObjectNilKeyException";
 
 - (id)init
 {
-    return [self initWithContext:nil andKey:nil];
+    return [self initWithKey:nil context:nil];
 }
 
-- (id)initWithContext:(PMObjectContext*)context andKey:(NSString*)key
+- (id)initWithKey:(NSString*)key context:(PMObjectContext*)context
 {
     if (!key)
         return nil;
@@ -47,11 +47,7 @@ NSString * const PMBaseObjectNilKeyException = @"PMBaseObjectNilKeyException";
     if (self)
     {
         _key = key;
-        
-        [self addKeyMapping:[self.class dictionaryWithKeysForMappingKeys]];
-        
         _context = context;
-                
         _hasChanges = NO;
         
         [_context insertObject:self];
@@ -59,48 +55,14 @@ NSString * const PMBaseObjectNilKeyException = @"PMBaseObjectNilKeyException";
     return self;
 }
 
-- (id)initWithContext:(PMObjectContext*)context andValues:(NSDictionary*)dictionary
-{
-    return [self initWithContext:context andValues:dictionary logUndefinedMappings:YES];
-}
-
-- (id)initWithContext:(PMObjectContext*)context andValues:(NSDictionary*)dictionary logUndefinedMappings:(BOOL)flag
-{
-    NSDictionary *map = [self.class dictionaryWithKeysForMappingKeys];
-    
-    NSArray *allKeys = [map allKeysForObject:@"key"];
-    NSString *webKey = nil;
-    
-    for (NSString *string in allKeys)
-    {
-        webKey = [dictionary valueForKey:string];
-        if (webKey)
-            break;
-    }
-    
-    if (!webKey)
-        return nil;
-    
-    self = [self initWithContext:context andKey:webKey];
-    
-    self.logUndefinedMappings = flag;
-    [self setValuesForKeysWithDictionary:dictionary];
-    
-    return self;
-}
-
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
-    NSDictionary *map = [self.class dictionaryWithKeysForMappingKeys];
-    self = [super initWithMapping:map];
-    
+    self = [super init];
     if (self)
     {
-        self.logUndefinedMappings = NO;
         NSArray *persistentKeys = [[self.class keysForPersistentValues] allObjects];
         for (NSString *key in persistentKeys)
             [self setValue:[aDecoder decodeObjectForKey:key] forKey:key];
-        self.logUndefinedMappings = YES;
     }
     return self;
 }
@@ -142,7 +104,7 @@ NSString * const PMBaseObjectNilKeyException = @"PMBaseObjectNilKeyException";
 
 #pragma mark Public Methods
 
-+ (PMBaseObject*)baseObjectWithKey:(NSString *)key inContext:(PMObjectContext*)context allowsCreation:(BOOL)flag
++ (instancetype)objectWithKey:(NSString *)key inContext:(PMObjectContext*)context allowsCreation:(BOOL)flag;
 {
     if (key == nil)
     {
@@ -159,51 +121,23 @@ NSString * const PMBaseObjectNilKeyException = @"PMBaseObjectNilKeyException";
     
     if (flag)
     {        
-        baseObject = [[self alloc] initWithContext:context andKey:key];
+        baseObject = [[self alloc] initWithKey:key context:context];
         return baseObject;
     }
     
     return nil;
 }
 
-+ (PMBaseObject*)baseObjectWithDictionary:(NSDictionary*)dictionary inContext:(PMObjectContext*)context
-{
-    NSDictionary *map = [self dictionaryWithKeysForMappingKeys];
-    
-    NSArray *allKeys = [map allKeysForObject:@"key"];
-    NSString *webKey = nil;
-    
-    for (NSString *string in allKeys)
-    {
-        webKey = [dictionary valueForKey:string];
-        if (webKey)
-            break;
-    }
-    
-    // In case the webkey is formatted as an integer, we build a string from it.
-    // This will allow the system to work with web keys being integers, even if they are stored as strings.
-    if ([webKey isKindOfClass:[NSNumber class]])
-        webKey = [NSString stringWithFormat:@"%d", webKey.intValue];
-    
-    if (!webKey)
-        return nil;
-    
-    PMBaseObject *baseObject = [self baseObjectWithKey:webKey inContext:context allowsCreation:YES];
-    [baseObject setValuesForKeysWithDictionary:dictionary];
-    
-    return baseObject;
-}
-
 #pragma mark Key Value Coding
 
-- (void)setValue:(id)value forMappedKey:(NSString *)key
+- (void)setValue:(id)value forKey:(NSString *)key
 {
     NSSet *persistentKeys = [self.class keysForPersistentValues];
     
     if ([persistentKeys containsObject:key])
         _hasChanges = YES;
     
-    [super setValue:value forMappedKey:key];
+    [super setValue:value forKey:key];
 }
 
 #pragma mark Properties
@@ -240,12 +174,6 @@ NSString * const PMBaseObjectNilKeyException = @"PMBaseObjectNilKeyException";
 {
     return [NSSet set];
 }
-
-+ (NSDictionary*)dictionaryWithKeysForMappingKeys
-{
-    return @{};
-}
-
 
 @end
 
