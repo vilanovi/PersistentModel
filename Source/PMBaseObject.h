@@ -115,6 +115,6 @@ extern NSString * const PMBaseObjectNilKeyException;
  * Set of property names that are automatically persistent via KVC access.
  * @discussion Subclasses may override this method to mark those properties to be persistent. Values will be accessed via KVC. By default this class returns an empty set.
  **/
-+ (NSSet*)keysForPersistentValues;
+- (NSSet*)keysForPersistentValues;
 
 @end

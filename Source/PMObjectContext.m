@@ -245,7 +245,7 @@ NSString * const PMObjectContextDeletedObjectsKey = @"PMObjectContextDeletedObje
         
         if (myObject)
         {
-            NSDictionary *keyedValues = [object dictionaryWithValuesForKeys:[[object.class keysForPersistentValues] allObjects]];
+            NSDictionary *keyedValues = [object dictionaryWithValuesForKeys:[[object keysForPersistentValues] allObjects]];
             
             [myObject setValuesForKeysWithDictionary:keyedValues];
             myObject.hasChanges = NO;

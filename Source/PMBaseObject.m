@@ -60,7 +60,7 @@ NSString * const PMBaseObjectNilKeyException = @"PMBaseObjectNilKeyException";
     self = [super init];
     if (self)
     {
-        NSArray *persistentKeys = [[self.class keysForPersistentValues] allObjects];
+        NSArray *persistentKeys = [[self keysForPersistentValues] allObjects];
         for (NSString *key in persistentKeys)
             [self setValue:[aDecoder decodeObjectForKey:key] forKey:key];
     }
@@ -69,7 +69,7 @@ NSString * const PMBaseObjectNilKeyException = @"PMBaseObjectNilKeyException";
 
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
-    NSArray *persistentKeys = [[self.class keysForPersistentValues] allObjects];
+    NSArray *persistentKeys = [[self keysForPersistentValues] allObjects];
     for (NSString *key in persistentKeys)
         [aCoder encodeObject:[self valueForKey:key] forKey:key];
 }
@@ -132,7 +132,7 @@ NSString * const PMBaseObjectNilKeyException = @"PMBaseObjectNilKeyException";
 
 - (void)setValue:(id)value forKey:(NSString *)key
 {
-    NSSet *persistentKeys = [self.class keysForPersistentValues];
+    NSSet *persistentKeys = [self keysForPersistentValues];
     
     if ([persistentKeys containsObject:key])
         _hasChanges = YES;
@@ -170,7 +170,7 @@ NSString * const PMBaseObjectNilKeyException = @"PMBaseObjectNilKeyException";
     return YES;
 }
 
-+ (NSSet*)keysForPersistentValues
+- (NSSet*)keysForPersistentValues
 {
     return [NSSet set];
 }

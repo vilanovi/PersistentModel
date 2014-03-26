@@ -80,7 +80,7 @@
     _dbID = dbID;
 }
 
-- (void)setHasChanges:(BOOL)hasChanges
+- (void)pmd_setHasChanges:(BOOL)hasChanges
 {
     _hasChanges = hasChanges;
     
@@ -94,7 +94,7 @@
     
     _lastUpdate = lastUpdate;
     
-    self.hasChanges = _hasChanges || !sameValue;
+    [self pmd_setHasChanges:_hasChanges || !sameValue];
 }
 
 - (void)setData:(NSData *)data
@@ -103,7 +103,7 @@
     
     _data = data;
     
-    self.hasChanges = _hasChanges || didChange;
+    [self pmd_setHasChanges:_hasChanges || didChange];
 }
 
 #pragma mark Key Value Coding
