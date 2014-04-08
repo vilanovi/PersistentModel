@@ -62,7 +62,11 @@ NSString * const PMBaseObjectNilKeyException = @"PMBaseObjectNilKeyException";
     {
         NSArray *persistentKeys = [[self keysForPersistentValues] allObjects];
         for (NSString *key in persistentKeys)
-            [self setValue:[aDecoder decodeObjectForKey:key] forKey:key];
+        {
+            id value = [aDecoder decodeObjectForKey:key];
+            if (value)
+                [self setValue:value forKey:key];
+        }
     }
     return self;
 }
