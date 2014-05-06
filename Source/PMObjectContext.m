@@ -324,6 +324,7 @@ NSString * const PMObjectContextDeletedObjectsKey = @"PMObjectContextDeletedObje
     NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
     
     PMBaseObject *baseObject = [unarchiver decodeObject];
+    baseObject.key = modelObject.key;
     [baseObject registerToContext:self];
     baseObject.lastUpdate = modelObject.lastUpdate;
     
