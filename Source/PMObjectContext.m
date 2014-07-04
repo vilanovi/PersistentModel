@@ -24,7 +24,7 @@
 
 #import "PMObjectContext.h"
 
-#import "PMBaseObject.h"
+#import "PMBaseObject+PrivateMethods.h"
 #import "PMPersistentObject.h"
 #import "PMPersistentStore.h"
 
@@ -245,7 +245,7 @@ NSString * const PMObjectContextDeletedObjectsKey = @"PMObjectContextDeletedObje
         
         if (myObject)
         {
-            NSDictionary *keyedValues = [object dictionaryWithValuesForKeys:[[object keysForPersistentValues] allObjects]];
+            NSDictionary *keyedValues = [object dictionaryWithValuesForKeys:[object.class pmd_allPersistentPropertyNames]];
             
             [myObject setValuesForKeysWithDictionary:keyedValues];
             myObject.hasChanges = NO;
@@ -324,6 +324,7 @@ NSString * const PMObjectContextDeletedObjectsKey = @"PMObjectContextDeletedObje
     NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
     
     PMBaseObject *baseObject = [unarchiver decodeObject];
+    baseObject.key = modelObject.key;
     [baseObject registerToContext:self];
     baseObject.lastUpdate = modelObject.lastUpdate;
     

@@ -23,10 +23,12 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE
 
 #import "PMBaseObject.h"
+#import "PMBaseObject+PrivateMethods.h"
 
 #import "PMObjectContext.h"
 
 NSString * const PMBaseObjectNilKeyException = @"PMBaseObjectNilKeyException";
+
 
 @implementation PMBaseObject
 
@@ -60,7 +62,7 @@ NSString * const PMBaseObjectNilKeyException = @"PMBaseObjectNilKeyException";
     self = [super init];
     if (self)
     {
-        NSArray *persistentKeys = [[self keysForPersistentValues] allObjects];
+        NSArray *persistentKeys = [self.class pmd_allPersistentPropertyNames];
         for (NSString *key in persistentKeys)
         {
             id value = [aDecoder decodeObjectForKey:key];
@@ -73,7 +75,7 @@ NSString * const PMBaseObjectNilKeyException = @"PMBaseObjectNilKeyException";
 
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
-    NSArray *persistentKeys = [[self keysForPersistentValues] allObjects];
+    NSArray *persistentKeys = [self.class pmd_allPersistentPropertyNames];
     for (NSString *key in persistentKeys)
         [aCoder encodeObject:[self valueForKey:key] forKey:key];
 }
@@ -136,7 +138,7 @@ NSString * const PMBaseObjectNilKeyException = @"PMBaseObjectNilKeyException";
 
 - (void)setValue:(id)value forKey:(NSString *)key
 {
-    NSSet *persistentKeys = [self keysForPersistentValues];
+    NSArray *persistentKeys = [self.class pmd_allPersistentPropertyNames];
     
     if ([persistentKeys containsObject:key])
         _hasChanges = YES;
@@ -174,9 +176,15 @@ NSString * const PMBaseObjectNilKeyException = @"PMBaseObjectNilKeyException";
     return YES;
 }
 
-- (NSSet*)keysForPersistentValues
+@end
+
+
+@implementation PMBaseObject (Subclassing)
+
++ (NSArray*)pmd_persistentPropertyNames
 {
-    return [NSSet set];
+    // Subclasses may override
+    return @[];
 }
 
 @end

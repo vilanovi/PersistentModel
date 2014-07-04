@@ -10,19 +10,17 @@
 
 @implementation PMUser
 
-+ (NSSet *)keysForPersistentValues
++ (NSArray*)pmd_persistentPropertyNames
 {
-    static NSSet *persistentKeys = nil;
-    
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        persistentKeys = [NSSet setWithArray:@[@"username",
-                                               @"age",
-                                               @"avatarURL",
-                                               ]];
-    });
-    
-    return persistentKeys;
+    return @[mjz_key(username),
+             mjz_key(age),
+             mjz_key(avatarURL),
+             ];
+}
+
+- (NSString*)description
+{
+    return [NSString stringWithFormat:@"%@ - %@, %ld, %@", [super description], _username, (long)_age, _avatarURL.absoluteString];
 }
 
 @end

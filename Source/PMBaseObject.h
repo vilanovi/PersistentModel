@@ -106,15 +106,17 @@ extern NSString * const PMBaseObjectNilKeyException;
  **/
 @property (nonatomic, assign) BOOL hasChanges;
 
+@end
 
-/** ---------------------------------------------------------------- **
- *  @name Auxiliar Methods
- ** ---------------------------------------------------------------- **/
+
+#define mjz_key(arg) NSStringFromSelector(@selector(arg))
+
+@interface PMBaseObject (Subclassing)
 
 /**
  * Set of property names that are automatically persistent via KVC access.
  * @discussion Subclasses may override this method to mark those properties to be persistent. Values will be accessed via KVC. By default this class returns an empty set.
  **/
-- (NSSet*)keysForPersistentValues;
++ (NSArray*)pmd_persistentPropertyNames;
 
 @end

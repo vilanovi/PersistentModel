@@ -11,22 +11,15 @@
 
 @implementation PMVideo
 
-+ (NSSet *)keysForPersistentValues
++ (NSArray*)pmd_persistentPropertyNames
 {
-    static NSSet *persistentKeys = nil;
-    
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        persistentKeys = [NSSet setWithArray:@[@"title",
-                                               @"about",
-                                               @"likesCount",
-                                               @"viewsCount",
-                                               @"uploaderKey",
-                                               @"participants",
-                                               ]];
-    });
-    
-    return persistentKeys;
+    return @[mjz_key(title),
+             mjz_key(about),
+             mjz_key(likesCount),
+             mjz_key(viewsCount),
+             mjz_key(uploaderKey),
+             mjz_key(participantsKeys),
+             ];
 }
 
 - (PMUser*)uploader

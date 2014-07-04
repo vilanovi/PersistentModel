@@ -14,6 +14,7 @@
 		D201AA2018DC75E600E5F26D /* PMSQLiteStore.m in Sources */ = {isa = PBXBuildFile; fileRef = D201AA1918DC75E600E5F26D /* PMSQLiteStore.m */; };
 		D201AA2318DC7C6600E5F26D /* PMVideo.m in Sources */ = {isa = PBXBuildFile; fileRef = D201AA2218DC7C6600E5F26D /* PMVideo.m */; };
 		D201AA2618DC7C6E00E5F26D /* PMUser.m in Sources */ = {isa = PBXBuildFile; fileRef = D201AA2518DC7C6E00E5F26D /* PMUser.m */; };
+		D24565E21967073300C910FA /* PMBaseObject+PrivateMethods.m in Sources */ = {isa = PBXBuildFile; fileRef = D24565E11967073300C910FA /* PMBaseObject+PrivateMethods.m */; };
 		D26C2B3518BFB1CF00E8BE90 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D26C2B3418BFB1CF00E8BE90 /* Foundation.framework */; };
 		D26C2B3718BFB1CF00E8BE90 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D26C2B3618BFB1CF00E8BE90 /* CoreGraphics.framework */; };
 		D26C2B3918BFB1CF00E8BE90 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D26C2B3818BFB1CF00E8BE90 /* UIKit.framework */; };
@@ -45,6 +46,8 @@
 		D201AA2218DC7C6600E5F26D /* PMVideo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PMVideo.m; sourceTree = "<group>"; };
 		D201AA2418DC7C6E00E5F26D /* PMUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PMUser.h; sourceTree = "<group>"; };
 		D201AA2518DC7C6E00E5F26D /* PMUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PMUser.m; sourceTree = "<group>"; };
+		D24565E01967073300C910FA /* PMBaseObject+PrivateMethods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PMBaseObject+PrivateMethods.h"; sourceTree = "<group>"; };
+		D24565E11967073300C910FA /* PMBaseObject+PrivateMethods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "PMBaseObject+PrivateMethods.m"; sourceTree = "<group>"; };
 		D26C2B3118BFB1CF00E8BE90 /* PersistentModelTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PersistentModelTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D26C2B3418BFB1CF00E8BE90 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		D26C2B3618BFB1CF00E8BE90 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -80,6 +83,8 @@
 				D201AA0B18DC75E600E5F26D /* PersistentModel.h */,
 				D201AA0C18DC75E600E5F26D /* PMBaseObject.h */,
 				D201AA0D18DC75E600E5F26D /* PMBaseObject.m */,
+				D24565E01967073300C910FA /* PMBaseObject+PrivateMethods.h */,
+				D24565E11967073300C910FA /* PMBaseObject+PrivateMethods.m */,
 				D201AA1018DC75E600E5F26D /* PMObjectContext.h */,
 				D201AA1118DC75E600E5F26D /* PMObjectContext.m */,
 				D201AA1218DC75E600E5F26D /* PMPersistentObject.h */,
@@ -257,6 +262,7 @@
 				D201AA1F18DC75E600E5F26D /* PMSQLiteObject.m in Sources */,
 				D26C2B4118BFB1CF00E8BE90 /* main.m in Sources */,
 				D26C2B4518BFB1CF00E8BE90 /* PMAppDelegate.m in Sources */,
+				D24565E21967073300C910FA /* PMBaseObject+PrivateMethods.m in Sources */,
 				D201AA1B18DC75E600E5F26D /* PMBaseObject.m in Sources */,
 				D201AA2018DC75E600E5F26D /* PMSQLiteStore.m in Sources */,
 				D201AA2618DC7C6E00E5F26D /* PMUser.m in Sources */,
