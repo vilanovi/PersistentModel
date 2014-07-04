@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "PersistentModel"
-  s.version      = "1.1.0"
+  s.version      = "1.1.1"
   s.summary      = "Easy creation for key-value storage model for iOS and OS X."
 
   s.description  = <<-DESC
@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
   s.author             = { "Joan Martin" => "vilanovi@gmail.com" }
   s.social_media_url = "http://twitter.com/joan_mh"
   s.platform     = :ios, '6.0'
-  s.source       = { :git => "https://github.com/vilanovi/PersistentModel.git", :tag => "1.1.0" }
+  s.source       = { :git => "https://github.com/vilanovi/PersistentModel.git", :tag => "1.1.1" }
   s.source_files = 'Source/*.{h,m}'
   s.framework  = 'UIKit'
   s.dependency   'FMDB'
